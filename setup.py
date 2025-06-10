@@ -20,7 +20,7 @@ setuptools.setup(
     platforms="all",
     install_requires=[
         "threefive >= 3.0.53",
-        "m3ufu >= 0.0.83",
+        "m3ufu >= 0.0.93",
     ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
