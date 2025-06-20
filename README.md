@@ -30,57 +30,27 @@ pypy3 -mpip install --upgrade threefive
 ```
 
 * __Some of the new stuff__:
+   * x9k3 now adds PAT and PMT to the start of every segment.
+   * PTS values are only parsed from the PCR PID to prevent backwards PTS values.  
    * x9k3 can now generate [byterange](#byterange) m3u8 files with `-b` or `--byterange` 
-   * `Playlists` can now be used as input.
+   * Playlists`of m3u8 files can now be used as input.
    * Segment `start time` is now always read, never calculated. 
    * Segment `duration verification` for segments that exceed the `target duration`. 
-   * `adbreak` script to generate SCTE-35 Cues.
    * `m3u8 files as input`. Resegment and add SCTE-35 to an existing m3u8. `-i INPUT`, `--input INPUT`
-   * `continue an m3u8 file.` Segments may be added to an existing m3u8, VOD or live. ` -c`, `--continue_m3u8 `
+   * Continue an m3u8 file.` Segments may be added to an existing m3u8, VOD or live. ` -c`, `--continue_m3u8 `
    * `discontinuity tags` may now be `omitted`. `-n`, `--no_discontinuity`
-   * auto `CUE-IN`
+   * Automatic `CUE-IN`
    * live `throttling` can be `disabled` with the `-N`, `--no_throttle` flag 
+<samp>
 
-# `Heads Up`
+# `Free Advice that you probably won't take`.
 
+### The easiest way to improve the accuracy of SCTE-35 in HLS is to<br> encode `ONE IFRAME EVERY SECOND`. 
+### `I know Apple's says every two seconds`,<br> but they don't care about your SCTE-35 and I don't really care myself,<br> but I want my software to be accurate and `ONE IFRAME EVERY SECOND`<br> is the best way for x9k3, or ANY HLS SCTE-35 software to be accurate.  
 
-###  `adbreak`
-* included with x9k3
-* adbreak generates SCTE35 Cues for CUE-OUT and CUE-IN in a sidecar file. 
-```lua
-$ adbreak -h
-usage: adbreak [-h] [-d DURATION] [-p PTS] [-s SIDECAR]
+## If I'm wrong,<br> then `open a ticket and yell at me and call me bad names`.
 
-options:
-  -h, --help            show this help message and exit
-  -d DURATION, --duration DURATION
-                        set duration of ad break. [ default: 60.0 ]
-  -p PTS, --pts PTS     set start pts for ad break. Not setting pts will
-                        generate a Splice Immediate CUE-OUT. [ default: 0.0 ]
-  -s SIDECAR, --sidecar SIDECAR
-                        Sidecar file of SCTE-35 (pts,cue) pairs. [ default:
-                        sidecar.txt ]
-
-
-```
-* Usage:
-```lua
-adbreak --pts 1234.567890 --duration 30 --sidecar sidecar.txt
-```
-* sidecar file has SCTE-35 Cues for CUE-OUT and CUE-IN
-```lua
-1234.56789,/DAlAAAAAAAAAP/wFAUAAAABf+/+Bp9rxv4AKTLgAAEAAAAAhzvmvQ==
-1264.56789,/DAgAAAAAAAAAP/wDwUAAAABf0/+BsiepgABAAAAAPh51T0=
-```
-* pass to x9k3
-```lua
-x9k3 -i input.ts -s sidecar.txt
-```
-<br>
-
-
-
-
+</samp>
 
 # `Features`
 
