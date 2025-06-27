@@ -18,15 +18,19 @@ x9k3 SCTE-35 injector for  HLS
 
 ![image](https://github.com/futzu/SCTE-35_HLS_x9k3/assets/52701496/4a273002-cf69-45ea-83dc-c85d09b6bdcc)
 #  x9k3 is an HLS segmenter that injects SCTE-35 into m3u8 files.
-  
-# Current Version:  `v.0.2.59`
+
+# Installed Worldwide over 100,000 times and over three times in Uzbekistan and Kazakhstan!***
+
+*** _(4 is more than 3.)_
+
+# Current Version:  `v.0.2.61`
 ### The `only supported version is the current version`. Keep up.
 ```js
-python3 -mpip install --upgrade threefive
+python3 -mpip install --upgrade x9k3
 ```
 * and / or 
 ```js
-pypy3 -mpip install --upgrade threefive
+pypy3 -mpip install --upgrade x9k3
 ```
 
 * __Some of the new stuff__:
@@ -46,10 +50,11 @@ pypy3 -mpip install --upgrade threefive
 # `Free Advice that you probably won't take`.
 
 ### The easiest way to improve the accuracy of SCTE-35 in HLS is to<br> encode `ONE IFRAME EVERY SECOND`. 
-### `I know Apple's says every two seconds`,<br> but they don't care about your SCTE-35 and I don't really care myself,<br> but I want my software to be accurate and `ONE IFRAME EVERY SECOND`<br> is the best way for x9k3, or ANY HLS SCTE-35 software to be accurate.  
+### `I know Apple's says every two seconds`,<br> but if you recall, Apple said four to six seconds between IFrames for years.<br> Apple doesn't care about your SCTE-35, and I don't really care myself,<br> but I want x9k3 to be accurate and `ONE IFRAME EVERY SECOND`<br> is the best way to be accurate with SCTE-35 and HLS.  
 
-## If I'm wrong,<br> then `open a ticket and yell at me and call me bad names`.
+### I wrote every single line of x9k3, please take my advice on how to use it. 
 
+---
 </samp>
 
 # `Features`
