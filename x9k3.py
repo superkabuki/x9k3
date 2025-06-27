@@ -21,7 +21,7 @@ from m3ufu import M3uFu
 
 MAJOR = "0"
 MINOR = "2"
-MAINTAINENCE = "59"
+MAINTAINENCE = "61"
 
 
 def version():
@@ -517,13 +517,8 @@ class X9K3(strm.Stream):
         if pid in self.pids.pmt :
             self.pmt_pkt=pkt
         if pid ==0:
-            self.pat_pkt=pkt        
-        pay = self._parse_payload(pkt)
-        if not self._same_as_last(pay, pid):
-            self._pmt_pid(pay, pid)
-            self._pat_pid(pay, pid)
-            self._sdt_pid(pay, pid)
-
+            self.pat_pkt=pkt
+        super()._parse_tables(pkt,pid)
 
     def _parse(self, pkt):
         """
