@@ -16,14 +16,11 @@ x9k3 SCTE-35 injector for  HLS
 
 
 
-![image](https://github.com/futzu/SCTE-35_HLS_x9k3/assets/52701496/4a273002-cf69-45ea-83dc-c85d09b6bdcc)
-#  x9k3 is an HLS segmenter that injects SCTE-35 into m3u8 files.
+# x9k3 is an HLS segmenter that injects SCTE-35 into m3u8 files.
+# Installed Over Seven Times in Bangladesh.
 
-# Installed Worldwide over 100,000 times and over three times in Uzbekistan and Kazakhstan!***
 
-*** _(4 is more than 3.)_
-
-# Current Version:  `v.0.2.61`
+# Current Version:  `v1.0.1`
 ### The `only supported version is the current version`. Keep up.
 ```js
 python3 -mpip install --upgrade x9k3
