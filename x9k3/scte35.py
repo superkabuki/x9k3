@@ -1,5 +1,5 @@
 """
-scte35.py Home of the SCTE35 class used by x9k3.
+x9k3/scte35.py Home of the SCTE35 class used by x9k3.
 
 """
 
