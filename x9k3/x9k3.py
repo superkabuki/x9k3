@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-X9K3
+x9k3/x9k3.py
 """
 import datetime
 import io
@@ -10,12 +10,12 @@ import sys
 import time
 from collections import deque
 from operator import itemgetter
-from pathlib import Path
-from threefive import Cue, ERR, IFramer, Segment, reader, red, pif, print2
+from threefive import blue, Cue, ERR, IFramer, Segment, reader, pif, print2
 import threefive.stream as strm
 from m3ufu import M3uFu
 from .argue import argue
 from .scte35 import SCTE35
+from .sliding import SlidingWindow
 
 MAJOR = "1"
 MINOR = "0"
@@ -105,14 +105,22 @@ class X9K3(strm.Stream):
         if self._chk_flags(flags):
             self.window.delete = True
         flags.popleft()  # pop self.args.delete
-
         flags.popleft()  # pop self.args.replay
 
     def _args_window_size(self):
+        """
+        _args_window_size sets sliding window size
+        if stream is live
+        """
         if self.args.live:
             self.window.size = self.args.window_size
 
     def _args_continue_m3u8(self):
+        """
+        _args_continue_m3u8 continues
+        a previously created index.m3u8
+        works with live or vod
+        """
         if self.args.continue_m3u8:
             self.continue_m3u8()
 
@@ -128,87 +136,28 @@ class X9K3(strm.Stream):
         self._args_flags()
         self._args_window_size()
         self._args_continue_m3u8()
-
         if isinstance(self._tsdata, str):
             self._tsdata = reader(self._tsdata)
 
-    def _line2scte35tag(self, line, segment_data):
+    def _shulga_mode(self, pkt):
         """
-        _line2scte35tag when continuing an m3u8
-        process the SCTE-35 lines.
+        _shulga_mode is mpeg2 video iframe detection
         """
-        if "#EXT-X-CUE-IN" in line:
-            segment_data.tags["#EXT-X-CUE-IN"] = None
-        if "#EXT-X-SPLICEPOINT-SCTE35" in line:
-            segment_data.tags["#EXT-X-SPLICEPOINT-SCTE35"] = line
-        if "#EXT-X-DATERANGE" in line:
-            segment_data.tags["#EXT-X-DATERANGE"] = line.replace(
-                "#EXT-X-DATERANGE:", "", 1
-            )
-        if "#EXT-X-SCTE35" in line:
-            segment_data.tags["#EXT-X-SCTE35"] = line
-        if "#EXT-X-DISCONTINUITY" in line:
-            segment_data.tags["#EXT-X-DISCONTINUITY"] = None
-
-    def _reload_segment_data(self, segment):
-        tmp_segnum = int(segment.relative_uri.split("seg")[1].split(".")[0])
-        segment_data = SegmentData(
-            segment.relative_uri,
-            segment.media,
-            tmp_segnum,
-        )
-        self.segnum = tmp_segnum
-        for this in ["#EXT-X-X9K3-VERSION", "#EXT-X-ENDLIST"]:
-            if this in segment.tags:
-                segment.tags.pop(this)
-        segment_data.tags = segment.tags
-
-        if "#EXTINF" in segment.tags:
-            segment_data.tags["#EXTINF"] = f'{pif(segment.tags["#EXTINF"]):.6},'
-        for line in segment.lines:
-            self._line2scte35tag(line, segment_data)
-        self.window.slide_panes(segment_data)
-
-    def _reload_m3u8(self):
-        """
-        m3u8_reload is called when the continue_m3u8 option is set.
-        """
-        m3 = M3uFu()
-        m3.window_size = None
-        tmp_name = self.mk_uri(self.args.output_dir, "tmp.m3u8")
-        with open(tmp_name, "w", encoding="utf8") as tmp_m3u8:
-            with open(self.m3u8uri(), "r", encoding="utf8") as m3u8:
-                tmp_m3u8.write("\n".join(m3u8.readlines()))
-                tmp_m3u8.write("\n#EXT-X-ENDLIST\n")
-        m3.m3u8 = tmp_name
-        m3.decode()
-        if "#EXT-X-DISCONTINUITY-SEQUENCE" in m3.headers:
-            self.discontinuity_sequence = m3.headers["#EXT-X-DISCONTINUITY-SEQUENCE"]
-        segments = list(m3.segments)
-        m3.segments[-1].tags["#EXT-X-DISCONTINUITY"] = None
-        for segment in segments:
-            self._reload_segment_data(segment)
-        # if self.window.panes:
-        if self.args.live:
-            self.window.slide_panes()
-        os.unlink(tmp_name)
-        self.first_segment = True
-
-    def continue_m3u8(self):
-        """
-        continue_m3u8 reads self.discontinuity_sequence
-        and self.segnum from an existing index.m3u8.
-        """
-        if os.path.isfile(self.m3u8uri()):
-            self._reload_m3u8()
-            self.segnum += 1
-            print2(f"Continuing {self.m3u8uri()} @ segment number {self.segnum}")
+        if self._rai_flag(pkt):
+            self._chk_splice_point()
 
     def m3u8uri(self):
         """
         m3u8uri return full path to the output index.m3u8
         """
         return self.mk_uri(self.args.output_dir, self.m3u8)
+
+    @staticmethod
+    def _rai_flag(pkt):
+        """
+        _rai_flag random access indicator flag
+        """
+        return pkt[5] & 0x40
 
     @staticmethod
     def mk_uri(head, tail):
@@ -221,6 +170,70 @@ class X9K3(strm.Stream):
         if not head.endswith(sep):
             head = head + sep
         return f"{head}{tail}"
+
+    @staticmethod
+    def clobber_file(the_file):
+        """
+        clobber_file  blanks the_file
+        """
+        with open(the_file, "w", encoding="utf8") as clobbered:
+            clobbered.close()
+
+    @staticmethod
+    def _endlist(line):
+        if "ENDLIST" in line:
+            return True
+        return False
+
+    def _chk_splice_point(self):
+        """
+        _chk_splice_point checks for the slice point
+        of a segment.
+        """
+        if self.started:
+            if self.scte35.cue_time:
+                if self.started < self.scte35.cue_time < self.next_start:
+                    self.next_start = self.scte35.cue_time
+            if self.now >= self.next_start:
+                self.next_start = self.now
+                self._write_segment()
+                self.scte35.mk_cue_state()
+
+    def _chk_cue_time(self, pid):
+        if self.scte35.cue:
+            self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
+
+    def _chk_iframe(self, pkt, pkt_pid):
+        i_pts = self.iframer.parse(pkt)
+        if i_pts:
+            self.now = i_pts
+            self.load_sidecar()
+            self._chk_sidecar_cues(pkt_pid)
+            self._chk_splice_point()
+
+    def _chk_live(self, seg_time):
+        if self.args.live:
+            self.window.slide_panes()
+            if not self.args.no_throttle:
+                self.timer.throttle(seg_time)
+            self._discontinuity_seq_plus_one()
+
+    def _chk_pdt_flag(self, segment_data):
+        if self.args.program_date_time:
+            segment_data.add_tag("#Iframe", f" @ {self.started}")
+            iso8601 = f"{datetime.datetime.utcnow().isoformat()}Z"
+            segment_data.add_tag("#EXT-X-PROGRAM-DATE-TIME", f"{iso8601}")
+
+    def _clear_endlist(self, lines):
+        return [line for line in lines if not self._endlist(line)]
+
+    def is_byterange(self):
+        """
+        is byterange returns True if m3u8 is byterange.
+        """
+        if self.args.byterange and ".ts" in self.args.input:
+            return True
+        return False
 
     def _header(self):
         """
@@ -272,19 +285,6 @@ class X9K3(strm.Stream):
             segment_data.add_tag(kay, vee)
             print2(f"{kay} = {vee}")
 
-    def _chk_pdt_flag(self, segment_data):
-        if self.args.program_date_time:
-            segment_data.add_tag("#Iframe", f" @ {self.started}")
-            iso8601 = f"{datetime.datetime.utcnow().isoformat()}Z"
-            segment_data.add_tag("#EXT-X-PROGRAM-DATE-TIME", f"{iso8601}")
-
-    def _chk_live(self, seg_time):
-        if self.args.live:
-            self.window.slide_panes()
-            if not self.args.no_throttle:
-                self.timer.throttle(seg_time)
-            self._discontinuity_seq_plus_one()
-
     def _mk_segment_data_tags(self, segment_data, seg_time):
         self._add_cue_tag(segment_data)
         self._chk_pdt_flag(segment_data)
@@ -294,13 +294,6 @@ class X9K3(strm.Stream):
             tag = "#EXT-X-BYTERANGE"
             val = f"{self.now_byte - self.started_byte}@{self.started_byte}"
             segment_data.add_tag(tag, val)
-
-    def _print_segment_details(self, seg_name, seg_time):
-        if not self.started:
-            return
-        one = f"{seg_name}:   start: {self.started:.6}   "
-        two = f"end: {self.now:.6f}   duration: {seg_time:.6}"
-        print2(f"{one}{two}")
 
     def _mk_segment_data(self, seg_file, seg_name, seg_time):
         segment_data = SegmentData(seg_file, seg_name, self.segnum)
@@ -315,19 +308,19 @@ class X9K3(strm.Stream):
         self._mk_segment_data_tags(segment_data, seg_time)
         self.window.slide_panes(segment_data)
 
+    def _print_segment_details(self, seg_name, seg_time):
+        if not self.started:
+            return
+        one = f"{seg_name}:   start: {self.started:.6}   "
+        two = f"end: {self.now:.6f}   duration: {seg_time:.6}"
+        print2(f"{one}{two}")
+
     def _write_segment_file(self, seg_name):
         with open(seg_name, "wb") as seg:
-            seg.write(self.pat_pkt)
-            seg.write(self.pmt_pkt)
+            if self.pat_pkt:
+                seg.write(self.pat_pkt)
+                seg.write(self.pmt_pkt)
             seg.write(self.active_segment.getbuffer())
-
-    def is_byterange(self):
-        """
-        is byterange returns True if m3u8 is byterange.
-        """
-        if self.args.byterange and ".ts" in self.args.input:
-            return True
-        return False
 
     def _write_segment(self):
         if not self.segnum:
@@ -353,32 +346,13 @@ class X9K3(strm.Stream):
                     print2(stuff)
         self._mk_segment_data(seg_file, seg_name, seg_time)
         self._write_m3u8()
-
         self._print_segment_details(seg_name, seg_time)
-        #   self._reset_stream()
         if self.scte35.break_timer is not None:
             self.scte35.break_timer += pif(seg_time)
         self.scte35.chk_cue_state()
         self._chk_live(seg_time)
         self._start_next_start(pts=self.now)
         self.started_byte = self.now_byte
-
-    def _clear_endlist(self, lines):
-        return [line for line in lines if not self._endlist(line)]
-
-    @staticmethod
-    def clobber_file(the_file):
-        """
-        clobber_file  blanks the_file
-        """
-        with open(the_file, "w", encoding="utf8") as clobbered:
-            clobbered.close()
-
-    @staticmethod
-    def _endlist(line):
-        if "ENDLIST" in line:
-            return True
-        return False
 
     def _write_m3u8(self):
         self.media_seq = self.window.panes[0].num
@@ -466,24 +440,6 @@ class X9K3(strm.Stream):
         if self.next_start + self.args.time > rollover:
             self._reset_stream()
 
-    def _chk_splice_point(self):
-        """
-        _chk_splice_point checks for the slice point
-        of a segment.
-        """
-        if self.started:
-            if self.scte35.cue_time:
-                if self.started < self.scte35.cue_time < self.next_start:
-                    self.next_start = self.scte35.cue_time
-            if self.now >= self.next_start:
-                self.next_start = self.now
-                self._write_segment()
-                self.scte35.mk_cue_state()
-
-    def _chk_cue_time(self, pid):
-        if self.scte35.cue:
-            self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
-
     def _adjusted_pts(self, cue, pid):
         pts = 0
         if "pts_time" in cue.command.get():
@@ -493,20 +449,6 @@ class X9K3(strm.Stream):
         pts_adjust = cue.info_section.pts_adjustment
         adj_pts = (pts + pts_adjust) % self.as_90k(self.ROLLOVER)
         return round(adj_pts, 6)
-
-    @staticmethod
-    def _rai_flag(pkt):
-        """
-        _rai_flag random access indicator flag
-        """
-        return pkt[5] & 0x40
-
-    def _shulga_mode(self, pkt):
-        """
-        _shulga_mode is mpeg2 video iframe detection
-        """
-        if self._rai_flag(pkt):
-            self._chk_splice_point()
 
     def _parse_scte35(self, pkt, pid):
         """
@@ -519,14 +461,6 @@ class X9K3(strm.Stream):
             self._chk_cue_time(pid)
             self.add2sidecar(f"{self._adjusted_pts(cue, pid)}, {cue.encode()}")
         return cue
-
-    def _chk_iframe(self, pkt, pkt_pid):
-        i_pts = self.iframer.parse(pkt)
-        if i_pts:
-            self.now = i_pts
-            self.load_sidecar()
-            self._chk_sidecar_cues(pkt_pid)
-            self._chk_splice_point()
 
     def _parse_tables(self, pkt, pid):
         """
@@ -546,7 +480,6 @@ class X9K3(strm.Stream):
         """
         super()._parse(pkt)
         self.now_byte += 188
-        #      pkt_pid = self._parse_pid(pkt[1], pkt[2])
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
         if not self.started:
@@ -567,7 +500,7 @@ class X9K3(strm.Stream):
         buff = self.active_segment.getbuffer()
         if buff:
             self._write_segment()
-            time.sleep(0.5)
+            time.sleep(0.3)
 
     def addendum(self):
         """
@@ -592,6 +525,72 @@ class X9K3(strm.Stream):
             super().decode()
         self.addendum()
 
+    def _retag(self, line, segment_data):
+        """
+        _retag when continuing an m3u8
+        retag segment_data tags from line.
+        """
+        for tag in ["#EXT-X-SPLICEPOINT-SCTE35", "#EXT-X-SCTE35", "#EXT-X-DATERANGE"]:
+            if tag in line:
+                segment_data.tags[tag] = line.replace(tag + ":", "", 1)
+        for tag in ["#EXT-X-CUE-IN", "#EXT-X-DISCONTINUITY"]:
+            if tag in line:
+                segment_data.tags[tag] = None
+
+    def _reload_segment_data(self, segment):
+        tmp_segnum = int(segment.relative_uri.split("seg")[1].split(".")[0])
+        segment_data = SegmentData(
+            segment.relative_uri,
+            segment.media,
+            tmp_segnum,
+        )
+        self.segnum = tmp_segnum
+        for this in ["#EXT-X-X9K3-VERSION", "#EXT-X-ENDLIST"]:
+            if this in segment.tags:
+                segment.tags.pop(this)
+        segment_data.tags = segment.tags
+
+        if "#EXTINF" in segment.tags:
+            segment_data.tags["#EXTINF"] = f'{pif(segment.tags["#EXTINF"]):.6},'
+        for line in segment.lines:
+            self._retag(line, segment_data)
+        self.window.slide_panes(segment_data)
+
+    def _reload_m3u8(self):
+        """
+        m3u8_reload is called when the continue_m3u8 option is set.
+        """
+        m3 = M3uFu()
+        m3.window_size = None
+        tmp_name = self.mk_uri(self.args.output_dir, "tmp.m3u8")
+        with open(tmp_name, "w", encoding="utf8") as tmp_m3u8:
+            with open(self.m3u8uri(), "r", encoding="utf8") as m3u8:
+                tmp_m3u8.write("\n".join(m3u8.readlines()))
+                tmp_m3u8.write("\n#EXT-X-ENDLIST\n")
+        m3.m3u8 = tmp_name
+        m3.decode()
+        if "#EXT-X-DISCONTINUITY-SEQUENCE" in m3.headers:
+            self.discontinuity_sequence = m3.headers["#EXT-X-DISCONTINUITY-SEQUENCE"]
+        segments = list(m3.segments)
+        m3.segments[-1].tags["#EXT-X-DISCONTINUITY"] = None
+        for segment in segments:
+            self._reload_segment_data(segment)
+        # if self.window.panes:
+        if self.args.live:
+            self.window.slide_panes()
+        os.unlink(tmp_name)
+        self.first_segment = True
+
+    def continue_m3u8(self):
+        """
+        continue_m3u8 reads self.discontinuity_sequence
+        and self.segnum from an existing index.m3u8.
+        """
+        if os.path.isfile(self.m3u8uri()):
+            self._reload_m3u8()
+            self.segnum += 1
+            print2(f"Continuing {self.m3u8uri()} @ segment number {self.segnum}")
+
     def _parse_m3u8_media(self, media):
         """
         _parse_m3u8_media parse a segment from
@@ -599,16 +598,14 @@ class X9K3(strm.Stream):
         """
         max_media = 1010101
         if media not in self.media_list:
-            # self._reset_stream()
             try:
                 self._tsdata = reader(media)
                 for pkt in self.iter_pkts():
                     self._parse(pkt)
                 self._tsdata.close()
                 self.media_list.append(media)
-            except:
-                # self._reset_stream()
-                red(f"skipping {media}")
+            except ERR:
+                blue(f"skipping {media}")
                 self.skipped_segment = True
             while len(self.media_list) > max_media:
                 self.media_list.popleft()
@@ -638,49 +635,6 @@ class X9K3(strm.Stream):
                         if base_uri not in media:
                             media = base_uri + media
                         self._parse_m3u8_media(media)
-
-
-class SlidingWindow:
-    """
-    The SlidingWindow class
-    """
-
-    def __init__(self, size=50000):
-        self.size = size
-        self.panes = deque()
-        self.delete = False
-
-    def popleft_pane(self):
-        """
-        popleft_pane removes the first item in self.panes
-        """
-        popped = self.panes.popleft()
-        if self.delete:
-            Path(popped.name).touch()
-            os.unlink(popped.name)
-            print2(f"deleted {popped.name}")
-
-    def push_pane(self, a_pane):
-        """
-        push appends a_pane to self.panes
-        """
-        self.panes.append(a_pane)
-
-    def all_panes(self):
-        """
-        all_panes returns the current window panes joined.
-        """
-        return "".join([a_pane.get() for a_pane in self.panes])
-
-    def slide_panes(self, a_pane=None):
-        """
-        slide calls self.push_pane with a_pane and then
-        calls self.popleft_pane to trim self.panes as needed.
-        """
-        if a_pane:
-            self.push_pane(a_pane)
-        if len(self.panes) > self.size:
-            self.popleft_pane()
 
 
 class Timer:
@@ -791,13 +745,31 @@ def decode_playlist(playlist):
     https://futzu.com/xaa.ts
 
     """
-    sidecar = None
+    comma = ","
+    octothorpe = "#"
     first = True
+    sidecar = None
     with reader(playlist) as plist:
         for line in plist.readlines():
             if not line:
                 break
-            load_playlist_media(line, sidecar=sidecar)
+            line = _clean_line(line)
+            media = line.split(octothorpe)[0]
+            if media:
+                if comma in media:
+                    media, sidecar = media.split(comma)
+            print2(f"loading media {media}")
+            x9 = X9K3()
+            if sidecar:
+                print2(f"loading sidecar file {sidecar}")
+                x9.args.sidecar_file = sidecar
+            x9.args.input = media
+            if first:
+                x9.decode()
+                first = False
+            else:
+                x9.continue_m3u8()
+                x9.decode()
 
 
 def load_playlist_media(line, sidecar=None):
@@ -807,7 +779,6 @@ def load_playlist_media(line, sidecar=None):
     """
     comma = ","
     octothorpe = "#"
-
     line = _clean_line(line)
     media = line.split(octothorpe)[0]
     if media:
