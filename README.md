@@ -1,8 +1,4 @@
-# x9k3
-x9k3 SCTE-35 injector for  HLS 
 
- 
- [Install](https://github.com/futzu/scte35-hls-segmenter-x9k3/README.md#install) |
  [Use](#how-to-use) |
  [CUE-OUT](#cue-out) |
  [CUE-IN](#cue-in)   |
@@ -11,37 +7,12 @@ x9k3 SCTE-35 injector for  HLS
  [Byterange m3u8](#byterange) |
  [Playlists](#playlists) |
  [Live hls](#live)  |
- [Bugs](https://github.com/futzu/scte35-hls-segmenter-x9k3/issues) |
- [Online SCTE-35 encoder](https://iodisco.com/cgi-bin/scte35encoder)
 
+# x9k3 is a SCTE-35 injector for  HLS 
 
+# https://github.com/superkabuki/x9k3 is the new home of x9k3
+ 
 
-# x9k3 is an HLS segmenter that injects SCTE-35 into m3u8 files.
-# Installed Over Seven Times in Bangladesh.
-
-
-# Current Version:  `v1.0.1`
-### The `only supported version is the current version`. Keep up.
-```js
-python3 -mpip install --upgrade x9k3
-```
-* and / or 
-```js
-pypy3 -mpip install --upgrade x9k3
-```
-
-* __Some of the new stuff__:
-   * x9k3 now adds PAT and PMT to the start of every segment.
-   * PTS values are only parsed from the PCR PID to prevent backwards PTS values.  
-   * x9k3 can now generate [byterange](#byterange) m3u8 files with `-b` or `--byterange` 
-   * Playlists`of m3u8 files can now be used as input.
-   * Segment `start time` is now always read, never calculated. 
-   * Segment `duration verification` for segments that exceed the `target duration`. 
-   * `m3u8 files as input`. Resegment and add SCTE-35 to an existing m3u8. `-i INPUT`, `--input INPUT`
-   * Continue an m3u8 file.` Segments may be added to an existing m3u8, VOD or live. ` -c`, `--continue_m3u8 `
-   * `discontinuity tags` may now be `omitted`. `-n`, `--no_discontinuity`
-   * Automatic `CUE-IN`
-   * live `throttling` can be `disabled` with the `-N`, `--no_throttle` flag 
 <samp>
 
 # `Free Advice that you probably won't take`.
@@ -49,10 +20,27 @@ pypy3 -mpip install --upgrade x9k3
 ### The easiest way to improve the accuracy of SCTE-35 in HLS is to<br> encode `ONE IFRAME EVERY SECOND`. 
 ### `I know Apple's says every two seconds`,<br> but if you recall, Apple said four to six seconds between IFrames for years.<br> Apple doesn't care about your SCTE-35, and I don't really care myself,<br> but I want x9k3 to be accurate and `ONE IFRAME EVERY SECOND`<br> is the best way to be accurate with SCTE-35 and HLS.  
 
-### I wrote every single line of x9k3, please take my advice on how to use it. 
 
 ---
 </samp>
+# Current Version:  `v1.0.1`
+### Yeah, it's been a while.
+
+
+* __Some of the new stuff__:
+   * __fixed eleven bugs you didn't even know existed.__  _I'm not going to tell you :)_ 
+   * __x9k3 now adds PAT and PMT to the start of every segment__.
+   * __PTS values are only parsed from the PCR PID to prevent backwards PTS values__.  
+   * __x9k3 can now generate [byterange](#byterange) m3u8 files with -b or --byterange__ 
+   * Playlists`of m3u8 and/or  MPEGTS files can now be used as input.
+   * Segment `start time` is now always read, never calculated. 
+   * Segment `duration verification` for segments that exceed the `target duration`. 
+   * `m3u8 files as input`. Resegment and add SCTE-35 to an existing m3u8. `-i INPUT`, `--input INPUT`
+   * Continue an m3u8 file.` Segments may be added to an existing m3u8, VOD or live. ` -c`, `--continue_m3u8 `
+   * `discontinuity tags` may now be `omitted`. `-n`, `--no_discontinuity`
+   * Automatic `CUE-IN`
+   * live `throttling` can be `disabled` with the `-N`, `--no_throttle` flag 
+
 
 # `Features`
 
