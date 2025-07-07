@@ -10,7 +10,7 @@ import sys
 import time
 from collections import deque
 from operator import itemgetter
-from threefive import blue, Cue, ERR, IFramer, Segment, reader, pif, print2
+from threefive import reblue, red, blue, Cue, ERR, IFramer, Segment, reader, pif, print2
 import threefive.stream as strm
 from m3ufu import M3uFu
 from .argue import argue
@@ -99,10 +99,10 @@ class X9K3(strm.Stream):
         I really expected to do more here.
         """
         flags = deque([self.args.program_date_time, self.args.delete, self.args.replay])
-        if self._chk_flags(flags):
-            self.args.live = True
+        #       if self._chk_flags(flags):
         flags.popleft()  # pop self.args.program_date_time
         if self._chk_flags(flags):
+            self.args.live = True
             self.window.delete = True
         flags.popleft()  # pop self.args.delete
         flags.popleft()  # pop self.args.replay
@@ -192,8 +192,10 @@ class X9K3(strm.Stream):
         """
         if self.started:
             if self.scte35.cue_time:
-                if self.started < self.scte35.cue_time < self.next_start:
-                    self.next_start = self.scte35.cue_time
+                if self.started < self.scte35.cue_time < self.now:
+                    blue(f"scte35.cue_time {self.scte35.cue_time}")
+                    blue(f"self.now {self.now}, self.started {self.started}")
+                    self.next_start = self.scte35.cue_time = self.now
             if self.now >= self.next_start:
                 self.next_start = self.now
                 self._write_segment()
@@ -204,12 +206,13 @@ class X9K3(strm.Stream):
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
 
     def _chk_iframe(self, pkt, pkt_pid):
-        i_pts = self.iframer.parse(pkt)
-        if i_pts:
-            self.now = i_pts
-            self.load_sidecar()
-            self._chk_sidecar_cues(pkt_pid)
-            self._chk_splice_point()
+        ##        i_pts = self.iframer.parse(pkt)  #  <-- We don't need this,
+        ##        if i_pts:   # splice out anywhere and ff to iframe on next segment.
+
+        self.now = self.pid2pts(pkt_pid)
+        self.load_sidecar()
+        self._chk_sidecar_cues(pkt_pid)
+        self._chk_splice_point()
 
     def _chk_live(self, seg_time):
         if self.args.live:
@@ -444,11 +447,11 @@ class X9K3(strm.Stream):
         pts = 0
         if "pts_time" in cue.command.get():
             pts = cue.command.pts_time
-        else:
-            pts = self.pid2pts(pid)
-        pts_adjust = cue.info_section.pts_adjustment
-        adj_pts = (pts + pts_adjust) % self.as_90k(self.ROLLOVER)
-        return round(adj_pts, 6)
+            ##        else:
+            ##            pts = self.pid2pts(pid)  # <--- this is stream pts not pts_time
+            pts_adjust = cue.info_section.pts_adjustment
+            pts = (pts + pts_adjust) % self.as_90k(self.ROLLOVER)
+        return round(pts, 6)
 
     def _parse_scte35(self, pkt, pid):
         """
@@ -457,7 +460,7 @@ class X9K3(strm.Stream):
         cue = super()._parse_scte35(pkt, pid)
         if cue:
             cue.decode()
-            self.scte35.cue = cue
+            # self.scte35.cue = cue    <--- This is bad if you read a new cue before the last cue occurs.
             self._chk_cue_time(pid)
             self.add2sidecar(f"{self._adjusted_pts(cue, pid)}, {cue.encode()}")
         return cue
@@ -482,8 +485,14 @@ class X9K3(strm.Stream):
         self.now_byte += 188
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
+        # blue(self.now)
         if not self.started:
-            self._start_next_start(pts=self.now)
+            if (
+                pkt_pid in self.pids.pmt or pkt_pid == 0 or self._pusi_flag(pkt)
+            ):  # <--- fast forward to iframe
+                self._start_next_start(pts=self.now)
+            else:
+                return
         if self._pusi_flag(pkt) and self.started:
             if self.args.shulga:
                 self._shulga_mode(pkt)
@@ -758,10 +767,10 @@ def decode_playlist(playlist):
             if media:
                 if comma in media:
                     media, sidecar = media.split(comma)
-            print2(f"loading media {media}")
+                blue(f"loading media {media}")
             x9 = X9K3()
             if sidecar:
-                print2(f"loading sidecar file {sidecar}")
+                blue(f"loading sidecar file {sidecar}")
                 x9.args.sidecar_file = sidecar
             x9.args.input = media
             if first:
@@ -770,32 +779,6 @@ def decode_playlist(playlist):
             else:
                 x9.continue_m3u8()
                 x9.decode()
-
-
-def load_playlist_media(line, sidecar=None):
-    """
-    load_playlist_media loads the input and sidecar files
-    when x9k3 is passed in
-    """
-    comma = ","
-    octothorpe = "#"
-    line = _clean_line(line)
-    media = line.split(octothorpe)[0]
-    if media:
-        if comma in media:
-            media, sidecar = media.split(comma)
-    print2(f"loading media {media}")
-    x9 = X9K3()
-    if sidecar:
-        print2(f"loading sidecar file {sidecar}")
-        x9.args.sidecar_file = sidecar
-    x9.args.input = media
-    if first:
-        x9.decode()
-        first = False
-    else:
-        x9.continue_m3u8()
-        x9.decode()
 
 
 def cli():
