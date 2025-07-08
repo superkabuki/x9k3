@@ -15,10 +15,20 @@
 
 <samp>
 
-# `Free Advice that you probably won't take`.
+ # State of the Union Address
+ <pre>
 
-### The easiest way to improve the accuracy of SCTE-35 in HLS is to<br> encode `ONE IFRAME EVERY SECOND`. 
-### `I know Apple's says every two seconds`,<br> but if you recall, Apple said four to six seconds between IFrames for years.<br> Apple doesn't care about your SCTE-35, and I don't really care myself,<br> but I want x9k3 to be accurate and `ONE IFRAME EVERY SECOND`<br> is the best way to be accurate with SCTE-35 and HLS.  
+    One of the things I have spent the most time on with x9k3 is improving 
+the accuracy of SCTE-35 Splice Points when the given Splice Point does not fall on an IFrame.
+    I had light bulb turn on over my head this weekend, I made several small edits and boom, 
+I'm getting much better results with misaligned splice points.
+    
+    I've also added code to handle missing segments when using an m3u8 as input, 
+x9k3 drops in a DISCO tag to cover the jump in pts and just keeps going.
+It's pretty slick.
+
+I'm about to do a new release is my point.
+</pre>
 
 
 ---
