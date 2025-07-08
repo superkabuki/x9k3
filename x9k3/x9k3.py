@@ -208,7 +208,6 @@ class X9K3(strm.Stream):
     def _chk_iframe(self, pkt, pkt_pid):
         ##        i_pts = self.iframer.parse(pkt)  #  <-- We don't need this,
         ##        if i_pts:   # splice out anywhere and ff to iframe on next segment.
-
         self.now = self.pid2pts(pkt_pid)
         self.load_sidecar()
         self._chk_sidecar_cues(pkt_pid)
@@ -314,8 +313,8 @@ class X9K3(strm.Stream):
     def _print_segment_details(self, seg_name, seg_time):
         if not self.started:
             return
-        one = f"{seg_name}:   start: {self.started:.6}   "
-        two = f"end: {self.now:.6f}   duration: {seg_time:.6}"
+        one = f"{seg_name}:   start: {self.started:.3f}   "
+        two = f"end: {self.now:.3f}   duration: {seg_time:.3f}"
         print2(f"{one}{two}")
 
     def _write_segment_file(self, seg_name):
@@ -333,7 +332,7 @@ class X9K3(strm.Stream):
         if self.is_byterange():
             seg_name = self.args.input
             seg_file = self.args.input
-        seg_time = round((self.now - self.started), 6)
+        seg_time = round((self.now - self.started), 3)
         if seg_time <= 0:
             return
         if not self.is_byterange():
@@ -344,14 +343,14 @@ class X9K3(strm.Stream):
                 s = Segment(seg_name)
                 s.decode()
                 if s.pts_start and s.pts_last:
-                    seg_time = f" {round(s.pts_last - s.pts_start, 6)}"
+                    seg_time = round(s.pts_last - s.pts_start, 3)
                     stuff = f"Setting {seg_name} time to {seg_time}"
-                    print2(stuff)
+                    red(stuff)
         self._mk_segment_data(seg_file, seg_name, seg_time)
         self._write_m3u8()
         self._print_segment_details(seg_name, seg_time)
         if self.scte35.break_timer is not None:
-            self.scte35.break_timer += pif(seg_time)
+            self.scte35.break_timer += seg_time
         self.scte35.chk_cue_state()
         self._chk_live(seg_time)
         self._start_next_start(pts=self.now)
@@ -487,8 +486,8 @@ class X9K3(strm.Stream):
         self.now = self.pid2pts(pkt_pid)
         # blue(self.now)
         if not self.started:
-            if (
-                pkt_pid in self.pids.pmt or pkt_pid == 0 or self._pusi_flag(pkt)
+            if (self._pusi_flag(pkt)
+                #pkt_pid in self.pids.pmt or pkt_pid == 0 or self._pusi_flag(pkt)
             ):  # <--- fast forward to iframe
                 self._start_next_start(pts=self.now)
             else:
