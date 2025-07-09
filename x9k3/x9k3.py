@@ -195,7 +195,9 @@ class X9K3(strm.Stream):
                 if self.started < self.scte35.cue_time < self.now:
                     blue(f"scte35.cue_time {self.scte35.cue_time}")
                     blue(f"self.now {self.now}, self.started {self.started}")
-                    self.next_start = self.scte35.cue_time = self.now
+                    self.next_start= self.scte35.cue_time = self.now
+                    blue(f"scte35.cue_time {self.scte35.cue_time}")
+                    blue(f"self.now {self.now}, self.next_start {self.next_start}")
             if self.now >= self.next_start:
                 self.next_start = self.now
                 self._write_segment()
@@ -206,9 +208,11 @@ class X9K3(strm.Stream):
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
 
     def _chk_iframe(self, pkt, pkt_pid):
-        ##        i_pts = self.iframer.parse(pkt)  #  <-- We don't need this,
-        ##        if i_pts:   # splice out anywhere and ff to iframe on next segment.
-        self.now = self.pid2pts(pkt_pid)
+     #   i_pts = self.iframer.parse(pkt)  #  <-- We don't need this,
+     #   if i_pts:
+       #     self.now = i_pts
+       # else:
+          #  self.now = self.pid2pts(pkt_pid)  # self.now has already been set.
         self.load_sidecar()
         self._chk_sidecar_cues(pkt_pid)
         self._chk_splice_point()
@@ -222,7 +226,6 @@ class X9K3(strm.Stream):
 
     def _chk_pdt_flag(self, segment_data):
         if self.args.program_date_time:
-            segment_data.add_tag("#Iframe", f" @ {self.started}")
             iso8601 = f"{datetime.datetime.utcnow().isoformat()}Z"
             segment_data.add_tag("#EXT-X-PROGRAM-DATE-TIME", f"{iso8601}")
 
@@ -290,7 +293,10 @@ class X9K3(strm.Stream):
     def _mk_segment_data_tags(self, segment_data, seg_time):
         self._add_cue_tag(segment_data)
         self._chk_pdt_flag(segment_data)
+        segment_data.add_tag("# Start", f" @ {self.started}")
+
         segment_data.add_tag("#EXTINF", f"{seg_time},")
+
 
         if self.is_byterange():
             tag = "#EXT-X-BYTERANGE"
@@ -458,7 +464,7 @@ class X9K3(strm.Stream):
         """
         cue = super()._parse_scte35(pkt, pid)
         if cue:
-            cue.decode()
+         #   cue.decode()
             # self.scte35.cue = cue    <--- This is bad if you read a new cue before the last cue occurs.
             self._chk_cue_time(pid)
             self.add2sidecar(f"{self._adjusted_pts(cue, pid)}, {cue.encode()}")
@@ -484,15 +490,9 @@ class X9K3(strm.Stream):
         self.now_byte += 188
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
-        # blue(self.now)
         if not self.started:
-            if (self._pusi_flag(pkt)
-                #pkt_pid in self.pids.pmt or pkt_pid == 0 or self._pusi_flag(pkt)
-            ):  # <--- fast forward to iframe
-                self._start_next_start(pts=self.now)
-            else:
-                return
-        if self._pusi_flag(pkt) and self.started:
+            self._start_next_start(pts=self.now)
+        if  self.started:
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
