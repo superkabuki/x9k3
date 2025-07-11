@@ -66,17 +66,8 @@ I'm about to do a new release is my point.
    * [__amt-play__ ](https://github.com/vivoh-inc/amt-play)uses x9k3.
 ---
 
-
-# `Requires` 
-* python 3.6+ or pypy3
-* [threefive](https://github.com/futzu/scte35-threefive)  
-* [new_reader](https://github.com/futzu/new_reader)
-* [iframes](https://github.com/futzu/iframes)
-
-
-
 # `Install`
-* Use pip to install the the x9k3 lib and  executable script x9k3 (_will install threefive, new_reader and iframes too_)
+* Use pip to install the the x9k3 lib and  executable script x9k3 (_will install threefive,m3ufu too_)
 ```lua
 # python3
 
@@ -174,16 +165,16 @@ optional arguments:
  ```
  #### `multicast stream as input with a live sliding window`   
    ```smalltalk
-   x9k3 --live -i udp://@235.35.3.5:3535
+   x9k3 --live -i udp://@235.35.3.5:3535 -o output_dir
    ```
   #### Live mode works with a live source or static files.
   *  x9k3 will throttle segment creation to mimic a live stream.
    ```js
-   x9k3 --live -i /some/video.ts
+   x9k3 --live -i /some/video.ts -o output_dir
    ```
  #### `live sliding window and deleting expired segments`
    ```smalltalk
-   x9k3  -i udp://@235.35.3.5:3535 --delete
+   x9k3  -i udp://@235.35.3.5:3535 --delete -o output_dir
    ```
 #### `https stream for input, and writing segments to an output directory`
    *  directory will be created if it does not exist.
@@ -196,11 +187,11 @@ optional arguments:
  ```  
 #### `using stdin as input`
    ```smalltalk
-   cat video.ts | x9k3
+   cat video.ts | x9k3   -o output_dir
    ```
 #### `live m3u8 file as input, add SCTE-35 from a sidecar file, change segment duration to 3 and output as live stream`
 ```smalltalk
-x9k3 -i https://example.com/rendition.m3u8 -s sidecar.txt -t 3 -l
+x9k3 -i https://example.com/rendition.m3u8 -s sidecar.txt -t 3 -l -o output-dir
 ```
 [⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
 
