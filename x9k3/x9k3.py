@@ -501,7 +501,7 @@ class X9K3(strm.Stream):
             self._start_next_start(pts=self.now)
         # else:
         #   return
-        if self.started :
+        if self.started:
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
