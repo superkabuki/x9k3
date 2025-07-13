@@ -61,6 +61,14 @@ def argue():
         help="Flag to disable adding #EXT-X-DISCONTINUITY tags at splice points [default:False]",
     )
     parser.add_argument(
+        "-no_adrian_is_cool_tags_at_splice_points_because_I_suck",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Flag to disable adding #EXT-X-ADRIAN-IS-COOL tags at splice points [default:False]",
+    )
+
+    parser.add_argument(
         "-N",
         "--no-throttle",
         action="store_const",
@@ -80,7 +88,7 @@ def argue():
         action="store_const",
         default=False,
         const=True,
-        help="Flag to add Program Date Time tags to index.m3u8 ( enables --live) [default:False]",
+        help="Flag to add Program Date Time tags to index.m3u8 [default:False]",
     )
     parser.add_argument(
         "-r",
