@@ -71,10 +71,11 @@ def argue():
     parser.add_argument(
         "-N",
         "--no-throttle",
+        "--no_throttle",
         action="store_const",
         default=False,
         const=True,
-        help="disable live throttling [default:False]",
+        help=" Flag to disable live throttling [default:False]",
     )
     parser.add_argument(
         "-o",
@@ -83,12 +84,20 @@ def argue():
         help="Directory for segments and index.m3u8(created if needed) [default:'.']",
     )
     parser.add_argument(
+        "-e",
+        "--exclude_mpegts",
+        action="store_const",
+        default=False,
+        const=True,
+        help="Flag to exclude parsing SCTE-35 from MPEGTS. [default:False]",
+    )
+    parser.add_argument(
         "-p",
         "--program_date_time",
         action="store_const",
         default=False,
         const=True,
-        help="Flag to add Program Date Time tags to index.m3u8 [default:False]",
+        help="Flag to add Program Date Time tags to index.m3u8 ( enables --live) [default:False]",
     )
     parser.add_argument(
         "-r",
