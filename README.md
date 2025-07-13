@@ -98,12 +98,15 @@ pypy3 -mpip install x9k3
 # `cli`
  
 ```smalltalk
-a@fu:~/x9k3-repo$ x9k3 -h
-usage: x9k3 [-h] [-i INPUT] [-b] [-c] [-d] [-l] [-n] [-N] [-o OUTPUT_DIR] [-p]
-            [-r] [-s SIDECAR_FILE] [-S] [-t TIME] [-T HLS_TAG]
-            [-w WINDOW_SIZE] [-v]
+a@fu:~/x9k3$ x9k3 --help
+
+usage: x9k3 [-h] [-i INPUT] [-b] [-c] [-d] [-l] [-n]
+            [-no_adrian_is_cool_tags_at_splice_points_because_I_suck] [-N]
+            [-o OUTPUT_DIR] [-e] [-p] [-r] [-s SIDECAR_FILE] [-S] [-t TIME]
+            [-T HLS_TAG] [-w WINDOW_SIZE] [-v]
 
 optional arguments:
+
   -h, --help            show this help message and exit
 
   -i INPUT, --input INPUT
@@ -120,15 +123,24 @@ optional arguments:
 
   -l, --live            Flag for a live event (enables sliding window m3u8)
                         [default:False]
+
   -n, --no_discontinuity
                         Flag to disable adding #EXT-X-DISCONTINUITY tags at
                         splice points [default:False]
 
-  -N, --no-throttle     disable live throttling [default:False]
+  -no_adrian_is_cool_tags_at_splice_points_because_I_suck
+                        Flag to disable adding #EXT-X-ADRIAN-IS-COOL tags at
+                        splice points [default:False]
+
+  -N, --no-throttle, --no_throttle
+                        Flag to disable live throttling [default:False]
 
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
                         Directory for segments and index.m3u8(created if
                         needed) [default:'.']
+
+  -e, --exclude_mpegts  Flag to exclude parsing SCTE-35 from MPEGTS.
+                        [default:False]
 
   -p, --program_date_time
                         Flag to add Program Date Time tags to index.m3u8 (
