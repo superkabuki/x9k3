@@ -204,16 +204,12 @@ class X9K3(strm.Stream):
                 self._write_segment()
                 self.scte35.mk_cue_state()
 
+
     def _chk_cue_time(self, pid):
         if self.scte35.cue:
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
 
     def _chk_iframe(self, pkt, pkt_pid):
-        #   i_pts = self.iframer.parse(pkt)  #  <-- We don't need this,
-        #   if i_pts:   # splice out anywhere and ff to iframe on next segment.
-        #     self.now = i_pts
-        # else:
-        #  self.now = self.pid2pts(pkt_pid)
         self.load_sidecar()
         self._chk_sidecar_cues(pkt_pid)
         self._chk_splice_point()
@@ -227,8 +223,6 @@ class X9K3(strm.Stream):
 
     def _chk_pdt_flag(self, segment_data):
         if self.args.program_date_time:
-
-            #            segment_data.add_tag("# Segment Start", f" @ {self.started}")
             iso8601 = f"{datetime.datetime.utcnow().isoformat()}Z"
             segment_data.add_tag("#EXT-X-PROGRAM-DATE-TIME", f"{iso8601}")
 
@@ -272,6 +266,10 @@ class X9K3(strm.Stream):
         """
         if not self.args.no_discontinuity:
             segment_data.add_tag("#EXT-X-DISCONTINUITY", None)
+        self._add_adrian(segment_data)
+
+    def _add_adrian(self, segment_data):
+        if not self.args.no_adrian_is_cool_tags_at_splice_points_because_I_suck:
             segment_data.add_tag("#EXT-X-ADRIAN-IS-COOL", None)
 
     def _add_cue_tag(self, segment_data):
@@ -297,10 +295,8 @@ class X9K3(strm.Stream):
     def _mk_segment_data_tags(self, segment_data, seg_time):
         self._add_cue_tag(segment_data)
         self._chk_pdt_flag(segment_data)
-        segment_data.add_tag("# Start", f" @ {self.started}")
-
+        segment_data.add_tag("# Start", f" @{self.started}")
         segment_data.add_tag("#EXTINF", f"{seg_time},")
-
         if self.is_byterange():
             tag = "#EXT-X-BYTERANGE"
             val = f"{self.now_byte - self.started_byte}@{self.started_byte}"
@@ -416,14 +412,14 @@ class X9K3(strm.Stream):
             for s in list(self.sidecar):
                 splice_pts = float(s[0])
                 splice_cue = s[1]
-                if self.started:
-                    if self.started <= splice_pts <= self.now:
-                        self.sidecar.remove(s)
-                        self.scte35.cue = Cue(splice_cue)
-                        self.scte35.cue.decode()
-                        self.scte35.cue.show()
-                        self._chk_cue_time(pid)
-                        self._chk_splice_point()
+          #      if self.started:
+                if self.started <= splice_pts <= self.now:
+                    self.sidecar.remove(s)
+                    self.scte35.cue = Cue(splice_cue)
+                    self.scte35.cue.decode()
+                    self.scte35.cue.show()
+                    self._chk_cue_time(pid)
+                    self._chk_splice_point()
 
     def _discontinuity_seq_plus_one(self):
         if self.window.panes:
@@ -455,8 +451,6 @@ class X9K3(strm.Stream):
         pts = 0
         if "pts_time" in cue.command.get():
             pts = cue.command.pts_time
-            ##        else:
-            ##            pts = self.pid2pts(pid)  # <--- this is stream pts not pts_time
             pts_adjust = cue.info_section.pts_adjustment
             pts = (pts + pts_adjust) % self.as_90k(self.ROLLOVER)
         return round(pts, 6)
@@ -467,8 +461,6 @@ class X9K3(strm.Stream):
         """
         cue = super()._parse_scte35(pkt, pid)
         if cue:
-            #   cue.decode()
-            # self.scte35.cue = cue    <--- This is bad if you read a new cue before the last cue occurs.
             self._chk_cue_time(pid)
             self.add2sidecar(f"{self._adjusted_pts(cue, pid)}, {cue.encode()}")
         return cue
@@ -493,20 +485,12 @@ class X9K3(strm.Stream):
         self.now_byte += 188
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
-        # blue(self.now)
         if not self.started:
-            # self.started =self.now
-            # if (self._pusi_flag(pkt)
-            ##                #pkt_pid in self.pids.pmt or pkt_pid == 0 or self._pusi_flag(pkt)
-            # ):  # <--- fast forward to iframe
             self._start_next_start(pts=self.now)
-        # else:
-        #   return
-        if self.started:
+        if self.started: # and self._pusi_flag(pkt):
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
-                #        if pkt_pid not in self.pids.pmt and pkt_pid != 0:
                 self._chk_iframe(pkt, pkt_pid)
         if not self.is_byterange():
             self.active_segment.write(pkt)
