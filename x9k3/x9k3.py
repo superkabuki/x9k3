@@ -10,7 +10,7 @@ import sys
 import time
 from collections import deque
 from operator import itemgetter
-from threefive import reblue, red, blue, Cue, ERR, IFramer, Segment, reader, pif, print2
+from threefive import red, blue, Cue, ERR, IFramer, Segment, reader, pif, print2
 import threefive.stream as strm
 from m3ufu import M3uFu
 from .argue import argue
@@ -204,12 +204,11 @@ class X9K3(strm.Stream):
                 self._write_segment()
                 self.scte35.mk_cue_state()
 
-
     def _chk_cue_time(self, pid):
         if self.scte35.cue:
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
 
-    def _chk_iframe(self, pkt, pkt_pid):
+    def _chk_iframe(self, pkt_pid):
         self.load_sidecar()
         self._chk_sidecar_cues(pkt_pid)
         self._chk_splice_point()
@@ -412,7 +411,7 @@ class X9K3(strm.Stream):
             for s in list(self.sidecar):
                 splice_pts = float(s[0])
                 splice_cue = s[1]
-          #      if self.started:
+                #      if self.started:
                 if self.started <= splice_pts <= self.now:
                     self.sidecar.remove(s)
                     self.scte35.cue = Cue(splice_cue)
@@ -459,6 +458,8 @@ class X9K3(strm.Stream):
         """
         _parse_scte35 overrides the inherited method.
         """
+        if self.args.exclude_mpegts:
+            return None
         cue = super()._parse_scte35(pkt, pid)
         if cue:
             self._chk_cue_time(pid)
@@ -487,11 +488,11 @@ class X9K3(strm.Stream):
         self.now = self.pid2pts(pkt_pid)
         if not self.started:
             self._start_next_start(pts=self.now)
-        if self.started: # and self._pusi_flag(pkt):
+        if self.started:  # and self._pusi_flag(pkt):
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
-                self._chk_iframe(pkt, pkt_pid)
+                self._chk_iframe(pkt_pid)
         if not self.is_byterange():
             self.active_segment.write(pkt)
 
@@ -685,7 +686,7 @@ class Timer:
         to simulate live streaming.
         """
         self.stop(end)
-        diff = round((seg_time - self.lap_time), 2)
+        diff = round((seg_time - self.lap_time) * 0.99, 2)
         if diff > 0:
             print2(f"throttling {diff}")
             time.sleep(diff)
