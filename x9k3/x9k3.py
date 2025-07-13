@@ -193,8 +193,9 @@ class X9K3(strm.Stream):
         if self.started:
             if self.scte35.cue_time:
                 if self.started < self.scte35.cue_time < self.now:
+                    blue(f"self.started {self.started}")
                     blue(f"scte35.cue_time {self.scte35.cue_time}")
-                    blue(f"self.now {self.now}, self.started {self.started}")
+                    blue(f"self.now {self.now}, self.next_start {self.next_start} ")
                     self.next_start = self.scte35.cue_time = self.now
                     blue(f"scte35.cue_time {self.scte35.cue_time}")
                     blue(f"self.now {self.now}, self.next_start {self.next_start}")
