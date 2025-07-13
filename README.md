@@ -34,12 +34,14 @@ I'm about to do a new release is my point.
 ---
 </samp>
 
-# Current Version:  `v1.0.1`
+# Current Version:  `v1.0.3`
 
 ### Yeah, it's been a while.
 
 
 * __Some of the new stuff__:
+   * __Big increase in __accuracy of misaligned SCTE-35 splice points__. 
+   * __-e or --exclude_mpegts flag__ added to __exclude parsing SCTE-35 embedded in MPEGTS__.
    * __fixed eleven bugs you didn't even know existed.__  _I'm not going to tell you :)_ 
    * __x9k3 now adds PAT and PMT to the start of every segment__.
    * __PTS values are only parsed from the PCR PID to prevent backwards PTS values__.  
