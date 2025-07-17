@@ -2,10 +2,10 @@
 
 import os
 import sys
-from abr import ABR
+from .abr import ABR
 from m3ufu import M3uFu
 from threefive import reader
-from x9k3 import X9K3, argue
+from .x9k3 import X9K3, argue
 
 def do(args):
     """
