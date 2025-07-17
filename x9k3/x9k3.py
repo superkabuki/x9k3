@@ -192,14 +192,19 @@ class X9K3(strm.Stream):
         """
         if self.started:
             if self.scte35.cue_time:
-                if self.started < self.scte35.cue_time < self.now:
+                self.scte35.cue_time = round(self.scte35.cue_time, 6)
+                if self.started < self.scte35.cue_time <= self.now < self.next_start:
                     blue(f"self.started {self.started}")
                     blue(f"scte35.cue_time {self.scte35.cue_time}")
-                    blue(f"self.now {self.now}, self.next_start {self.next_start} ")
+                    blue(f"self.now\t{self.now}")
+                    red(f" DIFF: {round(self.now -self.scte35.cue_time,6)}")
+                    blue(f"Scheduled self.next_start {self.next_start}")
                     self.next_start = self.scte35.cue_time = self.now
+                    blue(f"Updated self.next_start   {self.next_start}")
+                    blue("")
                     blue(f"scte35.cue_time {self.scte35.cue_time}")
-                    blue(f"self.now {self.now}, self.next_start {self.next_start}")
-            if self.now >= self.next_start:
+                    blue(f"self.now\t{self.now}")
+            if self.now >= self.next_start:                
                 self.next_start = self.now
                 self._write_segment()
                 self.scte35.mk_cue_state()
@@ -208,10 +213,11 @@ class X9K3(strm.Stream):
         if self.scte35.cue:
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
 
-    def _chk_iframe(self, pkt_pid):
-        self.load_sidecar()
-        self._chk_sidecar_cues(pkt_pid)
-        self._chk_splice_point()
+    def _chk_iframe(self, pkt,pkt_pid):
+        if self.iframer.parse(pkt):
+            self.load_sidecar()
+            self._chk_sidecar_cues(pkt_pid)
+            self._chk_splice_point()
 
     def _chk_live(self, seg_time):
         if self.args.live:
@@ -343,13 +349,13 @@ class X9K3(strm.Stream):
             self._write_segment_file(seg_name)
             if seg_time > self.args.time + 2:
                 stuff = f"Verifying {seg_name} time of {seg_time}"
-                print2(stuff)
+                blue(stuff)
                 s = Segment(seg_name)
                 s.decode()
                 if s.pts_start and s.pts_last:
                     seg_time = round(s.pts_last - s.pts_start, 3)
                     stuff = f"Setting {seg_name} time to {seg_time}"
-                    red(stuff)
+                    blue(stuff)
         self._mk_segment_data(seg_file, seg_name, seg_time)
         self._write_m3u8()
         self._print_segment_details(seg_name, seg_time)
@@ -384,7 +390,7 @@ class X9K3(strm.Stream):
                 for line in sidelines:
                     line = line.decode().strip().split("#", 1)[0]
                     if line:
-                        print2(f"loading  {line}")
+                        blue(f"loading  {line}")
                         if float(line.split(",", 1)[0]) == 0.0:
                             line = f'{self.now},{line.split(",",1)[1]}'
                         self.add2sidecar(line)
@@ -492,7 +498,7 @@ class X9K3(strm.Stream):
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
-                self._chk_iframe(pkt_pid)
+                self._chk_iframe(pkt,pkt_pid)
         if not self.is_byterange():
             self.active_segment.write(pkt)
 
@@ -593,7 +599,7 @@ class X9K3(strm.Stream):
         if os.path.isfile(self.m3u8uri()):
             self._reload_m3u8()
             self.segnum += 1
-            print2(f"Continuing {self.m3u8uri()} @ segment number {self.segnum}")
+            blue(f"Continuing {self.m3u8uri()} @ segment number {self.segnum}")
 
     def _parse_m3u8_media(self, media):
         """
@@ -601,6 +607,8 @@ class X9K3(strm.Stream):
         a m3u8 input file if it has not been parsed.
         """
         max_media = 1010101
+        if 'master.m3u8' in media:
+            return
         if media not in self.media_list:
             try:
                 self._tsdata = reader(media)
