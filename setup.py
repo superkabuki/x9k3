@@ -20,7 +20,7 @@ setuptools.setup(
     platforms="all",
     install_requires=[
         "threefive >= 3.0.55",
-        "m3ufu >= 0.0.93",
+        "m3ufu >= 0.0.95",
     ],
     classifiers=[
         "License :: OSI Approved :: Sleepycat License",
