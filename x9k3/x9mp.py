@@ -5,7 +5,8 @@ import sys
 from .abr import ABR
 from m3ufu import M3uFu
 from threefive import reader
-from .x9k3 import X9K3, argue
+from .x9k3 import X9K3, argue, version
+
 
 def do(args):
     """
@@ -59,8 +60,8 @@ def ismaster(m3u8):
     """
     ismaster master.m3u8 detection
     """
-    return b'#EXT-X-STREAM-INF' in  reader(m3u8).read()
-    
+    return b"#EXT-X-STREAM-INF" in reader(m3u8).read()
+
 
 def cli():
     """
