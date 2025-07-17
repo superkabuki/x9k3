@@ -5,7 +5,7 @@ x9k3/sliding.py
 from collections import deque
 from os import unlink
 from pathlib import Path
-from threefive.stuff import print2
+from threefive import blue
 
 
 class SlidingWindow:
@@ -26,7 +26,7 @@ class SlidingWindow:
         if self.delete:
             Path(popped.name).touch()
             unlink(popped.name)
-            print2(f"deleted {popped.name}")
+            blue(f"deleted {popped.name}")
 
     def push_pane(self, a_pane):
         """
