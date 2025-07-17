@@ -9,7 +9,7 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="x9k3",
     version=x9k3.version(),
-    author="Adrian of Doom and two really smart chicks in gogo boots",
+    author="Adrian of Doom and Two Really Smart Chicks in Gogo Boots",
     author_email="spam@iodisco.com",
     description="An HLS Segmenter with SCTE-35 Parsing and Injection",
     long_description=readme,
