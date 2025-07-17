@@ -1,4 +1,4 @@
-#!/usr/bin/env pypy3
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -6,6 +6,7 @@ from .abr import ABR
 from m3ufu import M3uFu
 from threefive import reader
 from .x9k3 import X9K3, argue, version
+from .x9k3 import cli as x9cli
 
 
 def do(args):
@@ -81,8 +82,7 @@ def cli():
     if ismaster(args.input):
         do(args)
     else:
-        x9 = X9K3()
-        x9.decode()
+        x9cli()
 
 
 if __name__ == "__main__":
