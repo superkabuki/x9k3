@@ -1,6 +1,7 @@
 """
 abr.py
 """
+
 from pathlib import Path
 import os
 import sys
@@ -17,14 +18,14 @@ class ABR:
     """
 
     def __init__(self, m3u8_list):
-        mp.set_start_method("spawn")
+        #       mp.set_start_method("spawn")
         self.master = None
         self.m3u8_list = m3u8_list
         self.args = argue()
         self.sidecar = self.args.sidecar_file
         self.side_files = []
         self.last_stat = 0
-        self.procs =[]
+        self.procs = []
 
     def add_rendition(self, m3u8, dir_name, rendition_sidecar=None):
         """
@@ -48,7 +49,7 @@ class ABR:
         with reader(self.sidecar) as sidefile:
             these_lines = sidefile.readlines()
             for side_file in self.side_files:
-                print( f"Updating {side_file}")
+                print(f"Updating {side_file}")
                 with open(side_file, "wb") as side:
                     side.writelines(these_lines)
 
@@ -73,7 +74,9 @@ class ABR:
         go writes the new master.m3u8.
         """
         dir_name = 0
-        with open(self.args.output_dir + "/master.m3u8", "w", encoding="utf-8") as master:
+        with open(
+            self.args.output_dir + "/master.m3u8", "w", encoding="utf-8"
+        ) as master:
             master.write("#EXTM3U\n#EXT-X-VERSION:6\n\n")
             for m3u8 in self.m3u8_list:
                 if "#EXT-X-STREAM-INF" in m3u8.tags:
@@ -95,7 +98,7 @@ class ABR:
                     else:
                         master.write(m3u8.lines[0])
                         master.write("\n")
-        while True in [p.is_alive() for p in self.procs ]:
+        while True in [p.is_alive() for p in self.procs]:
             self._chk_master_sidecar()
             time.sleep(0.2)
         sys.exit()
@@ -122,7 +125,7 @@ def mp_run(manifest, dir_name, rendition_sidecar=None):
     x9mp = mk_x9mp(manifest, dir_name, rendition_sidecar)
     x9mp.decode()
     while args.replay:
-        x9mp = mk_x9mp(manifest, dir_name,rendition_sidecar)
+        x9mp = mk_x9mp(manifest, dir_name, rendition_sidecar)
         x9mp.args.continue_m3u8 = True
         x9mp.continue_m3u8()
         x9mp.decode()
