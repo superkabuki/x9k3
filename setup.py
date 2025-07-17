@@ -19,7 +19,7 @@ setuptools.setup(
     scripts=["bin/x9k3"],
     platforms="all",
     install_requires=[
-        "threefive >= 3.0.55",
+        "threefive >= 3.0.57",
         "m3ufu >= 0.0.95",
     ],
     classifiers=[
