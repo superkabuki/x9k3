@@ -527,7 +527,6 @@ class X9K3(strm.Stream):
         and starts parsing.
         """
         self.apply_args()
-        _ = {print(k, "=", v) for k, v in vars(self.args).items()}
         self.timer.start()
         if isinstance(self.args.input, str) and ("m3u8" in self.args.input):
             self.decode_m3u8(self.args.input)
@@ -694,7 +693,7 @@ class Timer:
         to simulate live streaming.
         """
         self.stop(end)
-        diff = round((seg_time - self.lap_time) * 0.99, 2)
+        diff = round((seg_time - self.lap_time) * 0.99, 3)
         if diff > 0:
             print2(f"throttling {diff}")
             time.sleep(diff)
