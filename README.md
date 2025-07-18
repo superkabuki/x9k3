@@ -17,24 +17,31 @@
 
  # State of the Union Address
  <pre>
-
-    One of the things I have spent the most time on with x9k3 is improving 
-the accuracy of SCTE-35 Splice Points when the given Splice Point does not fall on an IFrame.
-    I had light bulb turn on over my head this weekend, I made several small edits and boom, 
-I'm getting much better results with misaligned splice points.
-    
-    I've also added code to handle missing segments when using an m3u8 as input, 
-x9k3 drops in a DISCO tag to cover the jump in pts and just keeps going.
-It's pretty slick.
-
-I'm about to do a new release is my point.
+ ABR Support added in v1.0.5.
+ 
+  Boom Goes the Dynamite.
 </pre>
 
 
 ---
 </samp>
 
-# Current Version:  `v1.0.3`
+# Current Version:  `v1.0.5`
+
+### ABR HLS 
+* HLS version 3 support only
+* Use a Sidecar file for SCTE-35 
+* Only MPEGTS segments
+* Audio and Video MUST be in the same stream.
+* No separate Audio tracks
+* No Audio only
+* No WebVTT
+* Pass a local master.m3u8 as input for x9k3
+```sh
+x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
+```
+
+
 
 ### Yeah, it's been a while.
 
