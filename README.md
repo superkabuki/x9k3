@@ -17,9 +17,14 @@
 
  # State of the Union Address
  <pre>
- ABR Support added in v1.0.5.
+  
+   Yeah, it's been a while, 
+ but I brought the good stuff.
+  
+   ABR Support added in v1.0.5.
  
   Boom Goes the Dynamite.
+  
 </pre>
 
 
@@ -27,44 +32,7 @@
 </samp>
 
 # Current Version:  `v1.0.5`
-
-### ABR HLS 
-* HLS version 3 support only
-* Use a Sidecar file for SCTE-35 
-* Only MPEGTS segments
-* Audio and Video MUST be in the same stream.
-* No separate Audio tracks
-* No Audio only
-* No WebVTT
-* Pass a local master.m3u8 as input for x9k3
-```sh
-x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
-```
-
-
-
-### Yeah, it's been a while.
-
-
-* __Some of the new stuff__:
-   * __Big increase in __accuracy of misaligned SCTE-35 splice points__. 
-   * __-e or --exclude_mpegts flag__ added to __exclude parsing SCTE-35 embedded in MPEGTS__.
-   * __fixed eleven bugs you didn't even know existed.__  _I'm not going to tell you :)_ 
-   * __x9k3 now adds PAT and PMT to the start of every segment__.
-   * __PTS values are only parsed from the PCR PID to prevent backwards PTS values__.  
-   * __x9k3 can now generate [byterange](#byterange) m3u8 files with -b or --byterange__ 
-   * Playlists`of m3u8 and/or  MPEGTS files can now be used as input.
-   * Segment `start time` is now always read, never calculated. 
-   * Segment `duration verification` for segments that exceed the `target duration`. 
-   * `m3u8 files as input`. Resegment and add SCTE-35 to an existing m3u8. `-i INPUT`, `--input INPUT`
-   * Continue an m3u8 file.` Segments may be added to an existing m3u8, VOD or live. ` -c`, `--continue_m3u8 `
-   * `discontinuity tags` may now be `omitted`. `-n`, `--no_discontinuity`
-   * Automatic `CUE-IN`
-   * live `throttling` can be `disabled` with the `-N`, `--no_throttle` flag 
-
-
 # `Features`
-
    * __SCTE-35 Cues__ in __Mpegts Streams__ are Translated into __HLS tags__.
    * __SCTE-35 Cues can be added from a [Sidecar File](#sidecar-files)__.
    * Segments are __Split on SCTE-35 Cues__ as needed.
@@ -74,6 +42,29 @@ x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
    * Supports [__Live__](https://github.com/futzu/scte35-hls-x9k3#live) __Streaming__.
    * [__amt-play__ ](https://github.com/vivoh-inc/amt-play)uses x9k3.
 ---
+
+# Documentation
+* [Install](#install)
+* [Use](#how-to-use) 
+    * [Cli](#cli)
+    * [Lib](#programmatically)
+    * [Sidecar Files](#sidecar-files)
+    * [Playlists](#playlists)
+* HLS Stuff
+    * [ABR HLS](abr-hls)
+    * [Byterange HLS](#byterange)
+    * [Live HLS](#live)
+* [Cues](#cues)
+    * [CUE-OUT](#cue-out) 
+    * [CUE-IN](#cue-in)
+* [SCTE-35 Tags](#supported-hls--tags)
+    * [EXT-X-CUE](#x_cue)
+    * [EXT-X-SCTE35](#x_scte35)
+    * [EXT-X-DATERANGE](#x_daterange)
+    * [EXT-X-SPLICEPOINT](#x_splicepoint)
+
+
+
 
 # `Install`
 * Use pip to install the the x9k3 lib and  executable script x9k3 (_will install threefive,m3ufu too_)
@@ -351,6 +342,20 @@ msnbc1000.ts
 msnbc1000.ts
 <SNIP>
 ```
+
+### ABR HLS 
+* HLS version 3 support only
+* Use a Sidecar file for SCTE-35 
+* Only MPEGTS segments
+* Audio and Video MUST be in the same stream.
+* No separate Audio tracks
+* No Audio only
+* No WebVTT
+* Pass a local master.m3u8 as input for x9k3
+```sh
+x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
+```
+
 
 ### `playlists`
 * playlists can be used as input
