@@ -39,10 +39,10 @@
       * [SCTE-35 Splice Immediate ](#sidecar-files-can-now-accept-0-as-the-pts-insert-time-for-splice-immediate) (_not the same as real time_)
     * [Playlists](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
 * HLS Stuff
-    * [ABR HLS](abr-hls) _(there are some terms and conditions)_
+    * [ABR HLS](#abr-hls) _(there are some terms and conditions)_
     * [Byterange HLS](#byterange) 
     * [Live HLS](#live) _(sliding windows, deleting segments, all that jazz)_
-    * [Looping videos](--replay) _(play the same thing over and over)_
+    * [Looping videos](#--replay) _(play the same thing over and over)_
 * [Cues](#cues)
     * [CUE-OUT](#cue-out) 
     * [CUE-IN](#cue-in)
