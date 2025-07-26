@@ -10,21 +10,15 @@
 
 # x9k3 is a SCTE-35 injector for  HLS 
 
-# https://github.com/superkabuki/x9k3 is the new home of x9k3
+### https://github.com/superkabuki/x9k3 is the new home of x9k3
  
-
 <samp>
 
- # State of the Union Address
  <pre>
-  
-   Yeah, it's been a while, 
- but I brought the good stuff.
-  
-   ABR Support added in v1.0.5.
- 
-  Boom Goes the Dynamite.
-  
+   Yeah, it's been a while, but I brought the good stuff.
+   ABR Support added in v1.0.5. Boom Goes the dynamite.
+
+  Adrian
 </pre>
 
 
