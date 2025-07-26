@@ -1,13 +1,3 @@
-
- [Use](#how-to-use) |
- [CUE-OUT](#cue-out) |
- [CUE-IN](#cue-in)   |
- [SCTE-35 Tags](#supported-hls--tags) |
- [Sidecar SCTE35](#sidecar-files) |
- [Byterange m3u8](#byterange) |
- [Playlists](#playlists) |
- [Live hls](#live)  |
-
 # x9k3 is a SCTE-35 injector for  HLS 
 
 ### https://github.com/superkabuki/x9k3 is the new home of x9k3
@@ -39,15 +29,20 @@
 
 # Documentation
 * [Install](#install)
-* [Use](#how-to-use) 
+* Use 
     * [Cli](#cli)
-    * [Lib](#programmatically)
-    * [Sidecar Files](#sidecar-files)
-    * [Playlists](#playlists)
+      * [Switches](#switches) _( --this and --that)_
+      * [Usage Examples](#example-usage)  
+    * [Lib](#programmatically) _(how to use x9k3 as a library)_
+    * [Sidecar Files](#sidecar-files) _(these are how you add the SCTE-35, super important)_
+      * [Adding SCTE-35 in real time](#in-live-mode-you-can-do-dynamic-cue-injection-with-a-sidecar-file)
+      * [SCTE-35 Splice Immediate ](#sidecar-files-can-now-accept-0-as-the-pts-insert-time-for-splice-immediate) (_not the same as real time_)
+    * [Playlists](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
 * HLS Stuff
-    * [ABR HLS](abr-hls)
-    * [Byterange HLS](#byterange)
-    * [Live HLS](#live)
+    * [ABR HLS](abr-hls) _(there are some terms and conditions)_
+    * [Byterange HLS](#byterange) 
+    * [Live HLS](#live) _(sliding windows, deleting segments, all that jazz)_
+    * [Looping videos](--replay) _(play the same thing over and over)_
 * [Cues](#cues)
     * [CUE-OUT](#cue-out) 
     * [CUE-IN](#cue-in)
@@ -72,7 +67,8 @@ python3 -mpip install x9k3
 pypy3 -mpip install x9k3
 ```
 
-[⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
+[⇪ top](#documentation)
+
 # `Details` 
 
 *  __X-SCTE35__, __X-CUE__, __X-DATERANGE__, or __X-SPLICEPOINT__ HLS tags can be generated. set with the `--hls_tag` switch.
@@ -90,7 +86,8 @@ pypy3 -mpip install x9k3
 
 
 # `cli`
- 
+
+### Switches
 ```smalltalk
 a@fu:~/x9k3$ x9k3 --help
 
@@ -199,7 +196,7 @@ optional arguments:
 ```smalltalk
 x9k3 -i https://example.com/rendition.m3u8 -s sidecar.txt -t 3 -l -o output-dir
 ```
-[⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
+[⇪ top](#documentation)
 
 
 
@@ -295,7 +292,7 @@ x9.args.window_size = 5
 x9.decode()
 ```
 
-[⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
+[⇪ top](#documentation)
 
 
  ### `byterange`
@@ -336,6 +333,7 @@ msnbc1000.ts
 msnbc1000.ts
 <SNIP>
 ```
+[⇪ top](#documentation)
 
 ### ABR HLS 
 * HLS version 3 support only
@@ -349,6 +347,7 @@ msnbc1000.ts
 ```sh
 x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
 ```
+[⇪ top](#documentation)
 
 
 ### `playlists`
@@ -376,6 +375,7 @@ https://example.com/index.m3u8,another-sidecar.txt
 ```lua
  x9k3 -i out.playlist
 ```
+[⇪ top](#documentation)
 
 
 ### `Sidecar Files`   
@@ -448,6 +448,7 @@ cue can be base64,hex, int, or bytes
 
 ``` 
  __Using 0 only works in live mode__
+[⇪ top](#documentation)
 
    ---
 ## CUES   
@@ -490,6 +491,7 @@ cue can be base64,hex, int, or bytes
 
 * For CUE-OUT and CUE-IN, `only the first Segmentation Descriptor will be used`
 ---
+[⇪ top](#documentation)
     
 ## `Supported HLS  Tags`
 * #EXT-X-CUE 
@@ -572,7 +574,7 @@ seg32.ts
 seg145.ts
 
 ```
-[⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
+[⇪ top](#documentation)
 
 ## `VOD`
 
@@ -595,7 +597,7 @@ seg145.ts
   * implies `--delete`
   * loops a video file and throttles segment creation to fake a live stream.
 
-[⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
+[⇪ top](#documentation)
 
 
    ![image](https://github.com/futzu/x9k3/assets/52701496/65d915f9-8721-4386-9353-2e32911c6a64)
