@@ -160,7 +160,7 @@ optional arguments:
 
 ```
 
-### Example Usage
+### `Example Usage`
 
  #### `local file as input`
  ```smalltalk
@@ -295,7 +295,7 @@ x9.decode()
 [⇪ top](#documentation)
 
 
- ### `byterange`
+ ### `Byterange`
  * with the cli tool
     * use __full path to video file__  when creating byterange m3u8. 
 ```smalltalk
@@ -335,7 +335,7 @@ msnbc1000.ts
 ```
 [⇪ top](#documentation)
 
-### ABR HLS 
+### `ABR HLS` 
 
 __Here's how it works__. 
 <samp>
@@ -381,7 +381,7 @@ throttling 4.23                       # <--- throttle time          throttle tim
 [⇪ top](#documentation)
 
 
-### `playlists`
+### `Playlists`
 * playlists can be used as input
 * playlist files must end in `.playlist`
 * lines are  video or  video, sidecar
@@ -482,7 +482,7 @@ cue can be base64,hex, int, or bytes
 [⇪ top](#documentation)
 
    ---
-## CUES   
+## `Cues`   
    
 ##   `CUE-OUT`
 #### A CUE-OUT is defined as:
