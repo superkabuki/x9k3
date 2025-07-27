@@ -364,10 +364,9 @@ x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
 ```
 
 * ABR works well over a network, if you have the bandwidth to download all renditions simultaneously.
- * If you don't have the bandwidth, the renditions will get out of sync.
- * The throttle time is a good indicator. throttle must be greater than half of target duration for all renditions.
-
- * throttle time is shown in the x9k3 output
+     * If you don't have the bandwidth, the renditions will get out of sync.
+     * The throttle time is a good indicator. throttle must be greater than half of target duration for all renditions.
+     * throttle time is shown in the x9k3 output
 
 ```rebol
 ./0/seg0.ts:   start: 0.160   end: 10.000   duration: 9.840  # <-- duration   
