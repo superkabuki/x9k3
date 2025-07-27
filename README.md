@@ -336,7 +336,20 @@ msnbc1000.ts
 [⇪ top](#documentation)
 
 ### ABR HLS 
+
+Here's how it works. 
+
+* When x9k3 detects a master.m3u8 as input, it starts up an ABR instance.
+* The ABR instance parses the master.m3u8 and finds rendtitions.
+* For each rendition an x9k3 process is started.
+* The ABR process also parses the SCTE-35 sidecar file and writes a sidecar file for each rendition.
+* The master.m3u8 is written to the output_dir.
+* Rendition segments and manifest files are written to output_dir/0, output_dir/1, etc.
+* any args passed in are set for all rendtions.
+   
 <img width="829" height="384" alt="image" src="https://github.com/user-attachments/assets/5a2e885f-44e0-42a6-a3d3-b524b4cb0758" />
+
+ The terms and condtions.
 
 * HLS version 3 support only
 * Use a Sidecar file for SCTE-35 
@@ -349,6 +362,23 @@ msnbc1000.ts
 ```sh
 x9k3 -i ~/o21/master.m3u8 -t 3 -l -s sidecar.txt
 ```
+
+* ABR works well over a network, if you have the bandwidth to download all renditions simultaneously.
+ * If you don't have the bandwidth, the renditions will get out of sync.
+ * The throttle time is a good indicator. throttle must be greater than half of target duration for all renditions.
+
+ * throttle time is shown in the x9k3 output
+
+```rebol
+./0/seg0.ts:   start: 0.160   end: 10.000   duration: 9.840  # <-- duration   
+throttling 8.22                        # <--- throttle time        throttle time > (duration / 2) GOOD
+
+
+./2/seg0.ts:   start: 0.160   end: 10.000   duration: 9.840  # <-- duration  
+throttling 4.23                       # <--- throttle time          throttle time < (duration / 2)  BAD
+
+```
+   
 [⇪ top](#documentation)
 
 
