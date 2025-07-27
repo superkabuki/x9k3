@@ -336,6 +336,8 @@ msnbc1000.ts
 [⇪ top](#documentation)
 
 ### ABR HLS 
+<img width="829" height="384" alt="image" src="https://github.com/user-attachments/assets/5a2e885f-44e0-42a6-a3d3-b524b4cb0758" />
+
 * HLS version 3 support only
 * Use a Sidecar file for SCTE-35 
 * Only MPEGTS segments
