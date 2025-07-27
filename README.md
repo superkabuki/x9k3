@@ -337,8 +337,8 @@ msnbc1000.ts
 
 ### ABR HLS 
 
-Here's how it works. 
-
+__Here's how it works__. 
+<samp>
 * When x9k3 detects a master.m3u8 as input, it starts up an ABR instance.
 * The ABR instance parses the master.m3u8 and finds rendtitions.
 * For each rendition an x9k3 process is started.
@@ -346,10 +346,10 @@ Here's how it works.
 * The master.m3u8 is written to the output_dir.
 * Rendition segments and manifest files are written to output_dir/0, output_dir/1, etc.
 * any args passed in are set for all rendtions.
-   
+</samp>
 <img width="829" height="384" alt="image" src="https://github.com/user-attachments/assets/5a2e885f-44e0-42a6-a3d3-b524b4cb0758" />
 
- The terms and condtions.
+ __The terms and condtions__.
 
 * HLS version 3 support only
 * Use a Sidecar file for SCTE-35 
