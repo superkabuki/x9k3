@@ -34,12 +34,14 @@
       * [Switches](#switches) _( --this and --that)_
       * [Usage Examples](#example-usage)  
     * [Lib](#programmatically) _(how to use x9k3 as a library)_
+      * [ABR in Code](#abr-in-code)  
     * [Sidecar Files](#sidecar-files) _(these are how you add the SCTE-35, super important)_
       * [Adding SCTE-35 in real time](#in-live-mode-you-can-do-dynamic-cue-injection-with-a-sidecar-file)
       * [SCTE-35 Splice Immediate ](#sidecar-files-can-now-accept-0-as-the-pts-insert-time-for-splice-immediate) (_not the same as real time_)
     * [Playlists](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
 * HLS Stuff
     * [ABR HLS](#abr-hls) _(there are some terms and conditions)_
+       * [ABR in Code](#abr-in-code) _(in less than ten lines)_
     * [Byterange HLS](#byterange) 
     * [Live HLS](#live) _(sliding windows, deleting segments, all that jazz)_
     * [Looping videos](#--replay) _(play the same thing over and over)_
