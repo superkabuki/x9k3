@@ -296,6 +296,12 @@ x9.decode()
 
 [⇪ top](#documentation)
 
+### `HLS as input`
+* x9k3 can use HLS manifests as input.
+* HLS Must be MPEGTS with audio and video together in the segment.
+* No audio only or separate audio.
+* Existing HLS SCTE-35 Tags in input manifests will be dropped.
+* [ABR HLS](#abr-hls) has additional restrictions
 
  ### `Byterange`
  * with the cli tool
