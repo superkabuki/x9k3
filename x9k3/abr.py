@@ -77,7 +77,6 @@ class ABR:
                 self.load_sidecar()
                 self.clobber_file(self.sidecar)
                 side_stat = os.stat(self.sidecar).st_mtime
-
                 self.last_stat = side_stat
 
     def go(self):
