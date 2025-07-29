@@ -377,6 +377,55 @@ throttling 8.22                        # <--- throttle time        throttle time
 throttling 4.23                       # <--- throttle time          throttle time < (duration / 2)  BAD
 
 ```
+
+### ABR in Code
+```py3
+Python 3.9.16 (7.3.11+dfsg-2+deb12u3, Dec 30 2024, 22:36:23)
+[PyPy 7.3.11 with GCC 12.2.0] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>>> from x9k3 import argue
+>>>> from x9k3.x9mp import do
+>>>> url = 'https://demo.unified-streaming.com/k8s/live/scte35.isml/.m3u8'
+>>>> args = argue()
+>>>> args.input=url
+>>>> do(args)
+
+```
+* imports
+```py3
+from x9k3 import argue
+from x9k3.x9mp import do
+```
+* define source
+```py3
+ url = 'https://demo.unified-streaming.com/k8s/live/scte35.isml/.m3u8'
+
+```
+* generate  the args.
+```py3
+
+args = argue()
+```
+* args is the Namespace returned by the standard library's argparser.
+* These are same options as the cli x9k3.
+```py3
+args
+Namespace(input=<_io.BufferedReader name='<stdin>'>, byterange=False, continue_m3u8=False,
+  delete=False, live=False, no_discontinuity=False, no_adrian_is_cool_tags_at_splice_points_because_I_suck=False,
+  no_throttle=False, output_dir='.', exclude_mpegts=False,program_date_time=False, replay=False, sidecar_file=None,
+  shulga=False, time=2, hls_tag='x_cue', window_size=5, version=False)
+```
+* use dot notation to set what you need
+ ```py3
+ args.input=url
+```
+* call do(args)
+```py3
+from x9k3.x9mp import do
+
+```
+
+* That's it.
    
 [⇪ top](#documentation)
 
