@@ -62,11 +62,22 @@ class ABR:
             self.side_files.append(rendition_sidecar)
         return rendition_sidecar
 
+    @staticmethod
+    def clobber_file(the_file):
+        """
+        clobber_file  blanks the_file
+        """
+        with open(the_file, "w", encoding="utf8") as clobbered:
+            clobbered.close()
+
     def _chk_master_sidecar(self):
         if self.sidecar:
             side_stat = os.stat(self.sidecar).st_mtime
             if side_stat != self.last_stat:
                 self.load_sidecar()
+                self.clobber_file(self.sidecar)
+                side_stat = os.stat(self.sidecar).st_mtime
+
                 self.last_stat = side_stat
 
     def go(self):
