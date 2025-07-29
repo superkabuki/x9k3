@@ -10,7 +10,9 @@ import sys
 import time
 from collections import deque
 from operator import itemgetter
-from threefive import red, blue, Cue, ERR, IFramer, Segment, reader, pif, print2
+from pathlib import Path
+from threefive import blue,pif, print2, red,  reader
+from threefive import Cue, ERR, IFramer, Segment
 import threefive.stream as strm
 from m3ufu import M3uFu
 from .argue import argue
@@ -204,7 +206,7 @@ class X9K3(strm.Stream):
                     blue("")
                     blue(f"scte35.cue_time {self.scte35.cue_time}")
                     blue(f"self.now\t{self.now}")
-            if self.now >= self.next_start:                
+            if self.now >= self.next_start:
                 self.next_start = self.now
                 self._write_segment()
                 self.scte35.mk_cue_state()
@@ -515,7 +517,7 @@ class X9K3(strm.Stream):
         _parse is run on every packet.
         """
         super()._parse(pkt)
-        self.now_byte += 188
+        self.now_byte += len(pkt)
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
         if not self.started:
@@ -798,6 +800,7 @@ def decode_playlist(playlist):
                 blue(f"loading media {media}")
             x9 = X9K3()
             if sidecar:
+                Path(sidecar).touch()
                 blue(f"loading sidecar file {sidecar}")
                 x9.args.sidecar_file = sidecar
             x9.args.input = media
