@@ -404,6 +404,7 @@ from x9k3.x9mp import do
 
 ```
 * generate  the args.
+* [more about args](#writing-code-with-x9k3)
 ```py3
 
 args = argue()
