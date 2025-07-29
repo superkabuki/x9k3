@@ -40,6 +40,7 @@
       * [SCTE-35 Splice Immediate ](#sidecar-files-can-now-accept-0-as-the-pts-insert-time-for-splice-immediate) (_not the same as real time_)
     * [Playlists](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
 * HLS Stuff
+    * [HLS as Input](#hls-as-input) 
     * [ABR HLS](#abr-hls) _(there are some terms and conditions)_
        * [ABR in Code](#abr-in-code) _(in less than ten lines)_
     * [Byterange HLS](#byterange) 
@@ -82,6 +83,7 @@ pypy3 -mpip install x9k3
 *  For SCTE-35, Video segments are cut at the the first iframe >=  the splice point pts.
 *  If no pts time is present in the SCTE-35 cue, the segment is cut at the next iframe. 
 * SCTE-35 cues with a preroll are inserted at the splice point.
+* x9k3 can continue an existing m3u8 file. You can switch or resume streams, x9k3 handles the details.
 
 # `How to Use`
 
