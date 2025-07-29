@@ -376,6 +376,27 @@ class X9K3(strm.Stream):
             self.first_segment = False
         self.active_segment = io.BytesIO()
         self.window.slide_panes()
+##
+##    def load_sidecar(self):
+##        """
+##        load_sidecar reads (pts, cue) pairs from
+##        the sidecar file and loads them into X9K3.sidecar
+##        """
+##        if self.args.sidecar_file:
+##            with reader(self.args.sidecar_file) as sidefile:
+##                sidelines = sidefile.readlines()
+##                if sidelines == self.last_sidelines:
+##                    return
+##                for line in sidelines:
+##                    line = line.decode().strip().split("#", 1)[0]
+##                    if line:
+##                        blue(f"loading  {line}")
+##                        if float(line.split(",", 1)[0]) == 0.0:
+##                            line = f'{self.now},{line.split(",",1)[1]}'
+##                        self.add2sidecar(line)
+##                sidefile.close()
+##                self.last_sidelines = sidelines
+##            self.clobber_file(self.args.sidecar_file)
 
     def load_sidecar(self):
         """
@@ -390,13 +411,18 @@ class X9K3(strm.Stream):
                 for line in sidelines:
                     line = line.decode().strip().split("#", 1)[0]
                     if line:
+                        _,data=line.split(',',1)
+                        cue=Cue(data)
+                        insert_pts = self._adjusted_pts(cue)
+                        line = f'{insert_pts},{data}'
                         blue(f"loading  {line}")
-                        if float(line.split(",", 1)[0]) == 0.0:
-                            line = f'{self.now},{line.split(",",1)[1]}'
+                        if insert_pts ==0.0:
+                            line = f'{self.now},{data}'
                         self.add2sidecar(line)
                 sidefile.close()
                 self.last_sidelines = sidelines
             self.clobber_file(self.args.sidecar_file)
+
 
     def add2sidecar(self, line):
         """
@@ -452,7 +478,7 @@ class X9K3(strm.Stream):
         if self.next_start + self.args.time > rollover:
             self._reset_stream()
 
-    def _adjusted_pts(self, cue, pid):
+    def _adjusted_pts(self, cue, pid=None):
         pts = 0
         if "pts_time" in cue.command.get():
             pts = cue.command.pts_time
@@ -494,7 +520,7 @@ class X9K3(strm.Stream):
         self.now = self.pid2pts(pkt_pid)
         if not self.started:
             self._start_next_start(pts=self.now)
-        if self.started:  # and self._pusi_flag(pkt):
+        if self.started and self._pusi_flag(pkt):
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
