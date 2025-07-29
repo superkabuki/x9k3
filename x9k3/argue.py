@@ -97,7 +97,7 @@ def argue():
         action="store_const",
         default=False,
         const=True,
-        help="Flag to add Program Date Time tags to index.m3u8 ( enables --live) [default:False]",
+        help="Flag to add Program Date Time tags to index.m3u8. [default:False]",
     )
     parser.add_argument(
         "-r",
@@ -110,8 +110,8 @@ def argue():
     parser.add_argument(
         "-s",
         "--sidecar_file",
-        default=None,
-        help="""Sidecar file of SCTE-35 (pts,cue) pairs. [default:None]""",
+        default='sidecar.txt',
+        help="""Sidecar file of SCTE-35 (pts,cue) pairs. [default:sidecar.txt]""",
     )
     parser.add_argument(
         "-S",
