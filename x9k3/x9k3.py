@@ -21,7 +21,7 @@ from .sliding import SlidingWindow
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "5"
+MAINTAINENCE = "7"
 
 
 def version():
