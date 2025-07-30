@@ -9,9 +9,9 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="x9k3",
     version=x9k3.version(),
-    author="Adrian of Doom and Two Really Smart Chicks in Gogo Boots",
+    author="Adrian of Doom and a Cast of Thousands",
     author_email="spam@iodisco.com",
-    description="An HLS Segmenter with SCTE-35 Parsing and Injection",
+    description="ABR HLS Segmenter with SCTE-35 Injecton",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/superkabuki/x9k3",
@@ -19,8 +19,8 @@ setuptools.setup(
     scripts=["bin/x9k3","bin/adbreak3","bin/adinterval",],
     platforms="all",
     install_requires=[
-        "threefive >= 3.0.57",
-        "m3ufu >= 0.0.95",
+        "threefive >= 3.0.59",
+        "m3ufu >= 0.0.97",
     ],
     classifiers=[
         "License :: OSI Approved :: Sleepycat License",
