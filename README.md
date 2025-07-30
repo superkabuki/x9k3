@@ -15,7 +15,7 @@
 ---
 </samp>
 
-# Current Version:  `v1.0.5`
+# Current Version:  `v1.0.7`
 # `Features`
    * __SCTE-35 Cues__ in __Mpegts Streams__ are Translated into __HLS tags__.
    * __SCTE-35 Cues can be added from a [Sidecar File](#sidecar-files)__.
