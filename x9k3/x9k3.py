@@ -76,6 +76,14 @@ class X9K3(strm.Stream):
         else:
             self._tsdata = self.args.input
 
+    def _args_sidecar(self):
+        try:
+            Path(self.args.sidecar_file).touch()
+        except:
+            self.args.sidecar_file='sidecar.txt'
+            Path(self.args.sidecar_file).touch()
+
+
     def _args_hls_tag(self):
         tag_map = {
             "x_scte35": self.scte35.x_scte35,
@@ -133,6 +141,7 @@ class X9K3(strm.Stream):
         """
         self._args_version()
         self._args_input()
+        self._args_sidecar()
         self._args_hls_tag()
         self._args_output_dir()
         self._args_flags()
