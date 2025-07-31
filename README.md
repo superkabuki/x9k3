@@ -30,30 +30,31 @@
 # Documentation
 * [Install](#install)
 * Use 
-    * [Cli](#cli)
+    * [__Cli__](#cli)
       * [Switches](#switches) _( --this and --that)_
-      * [Usage Examples](#example-usage)  
-    * [Lib](#programmatically) _(how to use x9k3 as a library)_
+      * [__Usage__ Examples](#example-usage)  
+    * [__Lib__](#programmatically) _(how to use x9k3 as a library)_
       * [ABR in Code](#abr-in-code)  
-    * [Sidecar Files](#sidecar-files) _(these are how you add the SCTE-35, super important)_
+    * [__Sidecar Files__](#sidecar-files) _(these are how you add the SCTE-35, super important)_
       * [Adding SCTE-35 in real time](#in-live-mode-you-can-do-dynamic-cue-injection-with-a-sidecar-file)
       * [SCTE-35 Splice Immediate ](#sidecar-files-can-now-accept-0-as-the-pts-insert-time-for-splice-immediate) (_not the same as real time_)
-    * [Playlists](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
+      * __SCTE-35 Generation__ with [adbreak3](#adbreak3)
+    * [__Playlists__](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
 * HLS Stuff
-    * [HLS as Input](#hls-as-input) 
-    * [ABR HLS](#abr-hls) _(there are some terms and conditions)_
+    * [__HLS as Input__](#hls-as-input) 
+    * [__ABR HLS__](#abr-hls) _(there are some terms and conditions)_
        * [ABR in Code](#abr-in-code) _(in less than ten lines)_
-    * [Byterange HLS](#byterange) 
-    * [Live HLS](#live) _(sliding windows, deleting segments, all that jazz)_
-    * [Looping videos](#--replay) _(play the same thing over and over)_
-* [Cues](#cues)
+    * [__Byterange__ HLS](#byterange) 
+    * [__Live__ HLS](#live) _(sliding windows, deleting segments, all that jazz)_
+    * [__Looping__ videos](#--replay) _(play the same thing over and over)_
+* [__Cues__](#cues)
     * [CUE-OUT](#cue-out) 
     * [CUE-IN](#cue-in)
-* [SCTE-35 Tags](#supported-hls--tags)
-    * [EXT-X-CUE](#x_cue)
-    * [EXT-X-SCTE35](#x_scte35)
-    * [EXT-X-DATERANGE](#x_daterange)
-    * [EXT-X-SPLICEPOINT](#x_splicepoint)
+* [SCTE-35 __Tags__](#supported-hls--tags)
+    * [#EXT-X-CUE](#x_cue)
+    * [__#EXT-X-SCTE35__](#x_scte35)
+    * [#EXT-X-DATERANGE](#x_daterange)
+    * [__#EXT-X-SPLICEPOINT__](#x_splicepoint)
 
 
 
@@ -689,10 +690,57 @@ seg145.ts
 
 [⇪ top](#documentation)
 
-
-   ![image](https://github.com/futzu/x9k3/assets/52701496/65d915f9-8721-4386-9353-2e32911c6a64)
-
    
+### `adbreak3`
+
+* included with x9k3
+* adbreak3 is a cli tool to generate SCTE-35 for sidecar files.
+* by default adbreak3 generates 2 SCTE35 Cues with Splice Innserts for CUE-OUT and CUE-IN and writes it to a sidecar file.
+
+```sed
+a@fu:~$ adbreak3 -h
+usage: adbreak3 [-h] [-d DURATION] [-e EVENT_ID] [-i] [-o] [-p PTS] [-P] [-s SIDECAR] [-v]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DURATION, --duration DURATION
+                        Set duration of ad break. [ default: 60.0 ]
+  -e EVENT_ID, --event-id EVENT_ID
+                        Set event id for ad break. [ default: 1 ]
+  -i, --cue-in-only     Only make a cue-in SCTE-35 cue [ default: False ]
+  -o, --cue-out-only    Only make a cue-out SCTE-35 cue [ default: False ]
+  -p PTS, --pts PTS     Set start pts for ad break. Not setting pts will generate a Splice Immediate CUE-OUT. [default: 0.0 ]
+  -P, --preroll         Add SCTE data four seconds before splice point. Used with MPEGTS. [ default: False ]
+  -s SIDECAR, --sidecar SIDECAR
+                        Sidecar file of SCTE-35 (pts,cue) pairs. [ default: sidecar.txt ]
+  -v, --version         Show version
+```
+* Usage:
+```rebol
+a@fu:~$ adbreak3 --pts 1234.567890 --duration 30 --sidecar sidecar.txt
+
+Writing to sidecar file: sidecar.txt
+
+		CUE-OUT   PTS:1234.567889   Id:1   Duration: 30.0
+		CUE-IN    PTS:1264.567889   Id:2
+```
+
+* Sidecar file has SCTE-35 Cues for CUE-OUT and CUE-IN
+
+```smalltalk
+a@fu:~$ cat sidecar.txt 
+1234.56789,/DAlAAAAAAAAAP/wFAUAAABNf+/+Bp9rxv4AKTLgAE0AAAAAFz4v5A==
+1264.56789,/DAgAAAAAAAAAP/wDwUAAABOf0/+BsiepgBOAAAAABSgtGA=
+```
+
+* Pass to x9k3
+```rebol
+x9k3 -i input.ts -s sidecar.txt
+
+```
+#### `Super Cool Feature`: adbreak3 can be used in real time to add SCTE-35 on the fly to live HLS manifest.
+
+
  
 
 
@@ -700,3 +748,4 @@ seg145.ts
 
 
 
+   ![image](https://github.com/futzu/x9k3/assets/52701496/65d915f9-8721-4386-9353-2e32911c6a64)
