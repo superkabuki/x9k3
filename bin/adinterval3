@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+
+"""
+adinterval
+generates SCTE-35 cues for sidecar files
+"""
+import argparse
+import os,sys,time
+from threefive import Cue
+from threefive.encode import mk_splice_insert
+import iframes
+from new_reader import reader
+
+ROLLOVER =95443.717678
+
+
+class Args:
+    """
+    Args sets Break Duration and Interval
+    """
+    def __init__(self):
+        self.event_id = 1
+        self.input =None
+        self.duration = None  # Break Duration
+        self.pts = None
+        self.bval = None   # Break Interval
+
+
+    def load(self,parsed):
+        self.input = parsed.input
+        self.duration = float(parsed.duration)
+        self.bval =float(parsed.break_interval)
+        self.sidecar = parsed.sidecar
+
+    def iter_args(self):
+        """
+        iter_args iterates pts, event_id,
+        handles clock rollover,
+        and sleeps during the break interval 
+        """
+        self.pts +=self.bval
+        self.pts = self.pts % ROLLOVER
+        self.event_id +=1
+        time.sleep((self.duration+self.bval) -4)
+
+
+def argue():
+    """
+    argue parses command line args
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-i",
+        "--input",
+        default=None,
+        help=f"Input source, is a master.m3u8(local or http(s) with MPEGTS segments  default: None",
+    )
+    parser.add_argument(
+        "-s",
+        "--sidecar",
+        default="sidecar.txt",
+        help=f"SCTE-35 Sidecar file default: None",
+    )
+    parser.add_argument(
+        "-b",
+        "--break_interval",
+        default=300,
+        help=f"Interval between breaks default: 300",
+    )
+    parser.add_argument(
+        "-d",
+        "--duration",
+        default=60,
+        help=f"Interval between breaks default: 60",
+    )
+    parsed = parser.parse_args()
+    args = Args()
+    args.load(parsed)
+    args.pts = find_iframe_pts(args.input)
+    return args
+    
+        
+def show_cue(new_cue):
+    """
+    show_cue displays cue data
+    """
+    cue = Cue(new_cue)
+    cue.decode()
+    cue.show()
+
+
+def cue_out(event_id, pts, duration, sidecar):
+    """
+    cue_out generates a SCTE-35 cue with out of network set to True
+    """
+    cue = mk_splice_insert(event_id, pts=pts, duration=duration, out=True).encode()
+    write_line(pts, cue, sidecar,'CUE-OUT')
+
+
+def cue_in(event_id, pts, sidecar):
+    """
+    cue_in generates a SCTE-35 cue with out of network set to False
+    """
+    cue = mk_splice_insert(event_id, pts=pts,duration =None, out=False).encode()
+    write_line(pts, cue, sidecar, 'CUE-IN')
+
+
+def write_line(pts, cue, sidecar,cue_state):
+    """
+    write_line writes pts,cue to sidecar file
+    """
+    fixed = round(pts,6)
+    print(f'{cue_state} @ {fixed}')
+    line = f"{fixed},{cue}\n"
+    sidecar.write(line)
+    sidecar.flush()
+
+
+def mk_cues(args):
+    """
+    mk_cues generates cues for the sidecar
+    based on the values in args
+    """
+    while True:
+        with open(args.sidecar,"w")as blank:
+            blank.close()
+        with open(args.sidecar, "a") as sidecar:
+            cue_out(args.event_id, args.pts, args.duration, sidecar)
+            args.pts+=args.duration 
+            cue_in(args.event_id, args.pts, sidecar)
+            sidecar.close()
+            args.iter_args()
+
+
+def find_iframe_pts(manifest):
+    with reader(manifest) as m3u8:
+        segs =[line for line in m3u8.readlines() if line and line[0] !='#']
+        ifr = iframes.IFramer()
+        seg =segs[-1].strip().decode()
+        pts = ifr.first(seg) +30.000
+        print('START', pts)
+        return pts
+
+        
+if __name__ == "__main__":
+    args = argue()
+    mk_cues(args)
+
