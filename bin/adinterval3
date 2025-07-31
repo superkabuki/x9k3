@@ -8,7 +8,7 @@ import argparse
 import os,sys,time
 from threefive import Cue
 from threefive.encode import mk_splice_insert
-from threefive import iFramer
+from threefive import IFramer
 from threefive import reader
 
 ROLLOVER =95443.717678
