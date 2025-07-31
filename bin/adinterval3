@@ -8,8 +8,8 @@ import argparse
 import os,sys,time
 from threefive import Cue
 from threefive.encode import mk_splice_insert
-import iframes
-from new_reader import reader
+from threefive import iFramer
+from threefive import reader
 
 ROLLOVER =95443.717678
 
@@ -135,7 +135,7 @@ def mk_cues(args):
 def find_iframe_pts(manifest):
     with reader(manifest) as m3u8:
         segs =[line for line in m3u8.readlines() if line and line[0] !='#']
-        ifr = iframes.IFramer()
+        ifr = IFramer()
         seg =segs[-1].strip().decode()
         pts = ifr.first(seg) +30.000
         print('START', pts)
