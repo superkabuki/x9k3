@@ -119,7 +119,7 @@ optional arguments:
   -l, --live            Flag for a live event (enables sliding window m3u8)
                         [default:False]
 
-  -n, --no_discontinuity
+  -n, --no_discontinuity                 
                         Flag to disable adding #EXT-X-DISCONTINUITY tags at
                         splice points [default:False]
 
@@ -127,7 +127,7 @@ optional arguments:
                         Flag to disable adding #EXT-X-ADRIAN-IS-COOL tags at
                         splice points [default:False]
 
-  -N, --no-throttle, --no_throttle
+  -N, --no-throttle, --no_throttle              
                         Flag to disable live throttling [default:False]
 
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
@@ -138,8 +138,7 @@ optional arguments:
                         [default:False]
 
   -p, --program_date_time
-                        Flag to add Program Date Time tags to index.m3u8 (
-                        enables --live) [default:False]
+                        Flag to add Program Date Time tags to index.m3u8  [default:False]
 
   -r, --replay          Flag for replay aka looping (enables --live,--delete)
                         [default:False]
