@@ -15,6 +15,20 @@
 ---
 </samp>
 
+### Little Help?
+There is a lot that can be added to x9k3, like fragmented mp4, llhls,etc. I have written every single line of code in x9k3, 
+<br>I wrote all the docs and have done everything else.<br>
+<br> 
+What I need:<br>
+* If you don't write code, you can help write docs or examples. <br>
+* If you write code but aren't sure of your skills, that's okay, I'll show you how to do it. <br>
+* If you write code and you're good, come on, I am a benevolent dictator, I am open to your input, but I make the final call.<br>
+* If you're artistic and/or CSS stylistic step up, I have web pages with cool functionality that need to made pretty,<br> and I will let you decide how that should be designed, art people have free reign.
+
+If nobody is going to help,<br> there is no point in me making it available to the public.
+<br>__Get involved or I'm going to stop__.<br>
+
+
 # Current Version:  `v1.0.7`
 # `Features`
    * __SCTE-35 Cues__ in __Mpegts Streams__ are Translated into __HLS tags__.
