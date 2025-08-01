@@ -28,6 +28,14 @@
 ---
 
 # Documentation
+
+### Q. 
+What is up with all the releases?
+
+### A.
+ Whenever I figure something out or fix a bug, I make a new release. I'm not going to make you wait for a bug fix. This way, releases are incremental, rather than  brand new software. Unless I have a really really good reason not to, I maintain backwards compatibilty and the interface, and by interface I mean function and method calls and such. New releases are designed to work with your existing code. 
+My point? __Staying up to date is in your best interest, and the only release I will support is the latest__.
+
 * [Install](#install)
 * Use 
     * [__Cli__](#cli)
