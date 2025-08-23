@@ -1,15 +1,11 @@
 # x9k3 is a SCTE-35 injector for  HLS 
-
-### https://github.com/superkabuki/x9k3 is the new home of x9k3
  
 <samp>
+ 
+   Yeah, it's been a while but __I brought the good stuff__.
+   <s>Sour Diesel</s> Multi-process __ABR HLS__ added in v1.0.5.
 
- <pre>
-   Yeah, it's been a while, but I brought the good stuff.
-   ABR Support added in v1.0.5. Boom Goes the dynamite.
-
-  Adrian
-</pre>
+  _Adrian_
 
 
 ---
