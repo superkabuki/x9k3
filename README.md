@@ -1,4 +1,4 @@
-# x9k3 is a SCTE-35 injector for  HLS 
+# x9k3 Injects SCTE-35 Into HLS 
  
 <samp>
  
