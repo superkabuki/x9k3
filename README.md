@@ -509,7 +509,7 @@ cue can be base64,hex, int, or bytes
   ```smalltalk
   x9k3 -i  noscte35.ts  -s sidecar.txt 
   ```
-####   In Live Mode you can do dynamic cue injection with a `Sidecar file`
+##   In Live Mode you can do dynamic cue injection with a `Sidecar file`
    ```js
    touch sidecar.txt
    
@@ -520,7 +520,7 @@ cue can be base64,hex, int, or bytes
    printf '38103.868589, /DAxAAAAAAAAAP/wFAUAAABdf+/+zHRtOn4Ae6DOAAAAAAAMAQpDVUVJsZ8xMjEqLYemJQ==\n' > sidecar.txt
    
    ```
-#### `Sidecar files` can now accept 0 as the PTS insert time for Splice Immediate. 
+## `Sidecar files` can now accept 0 as the PTS insert time for Splice Immediate. 
  
  
 
@@ -533,7 +533,7 @@ cue can be base64,hex, int, or bytes
  ```
  [⇪ top](https://github.com/futzu/x9k3/blob/main/README.md#hls--scte35--x9k3)
 
- ####  A CUE-OUT can be terminated early using a `sidecar file`.
+ ##  A CUE-OUT can be terminated early using a `sidecar file`.
 
  
  In the middle of a CUE-OUT send a splice insert with the out_of_network_indicator flag not set and the splice immediate flag set.
