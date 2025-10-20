@@ -30,6 +30,8 @@ def ismaster(m3u8):
     """
     ismaster master.m3u8 detection
     """
+    if m3u8 == sys.stdin.buffer:
+        return False
     return b"#EXT-X-STREAM-INF" in reader(m3u8).read()
 
 
