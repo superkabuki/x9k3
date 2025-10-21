@@ -110,7 +110,7 @@ def argue():
     parser.add_argument(
         "-s",
         "--sidecar_file",
-        default='sidecar.txt',
+        default="sidecar.txt",
         help="""Sidecar file of SCTE-35 (pts,cue) pairs. [default:sidecar.txt]""",
     )
     parser.add_argument(
