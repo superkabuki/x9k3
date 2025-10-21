@@ -11,7 +11,7 @@ import time
 from collections import deque
 from operator import itemgetter
 from pathlib import Path
-from threefive import blue,pif, print2, red,  reader
+from threefive import blue, pif, print2, red, reader
 from threefive import Cue, ERR, IFramer, Segment
 import threefive.stream as strm
 from m3ufu import M3uFu
@@ -77,12 +77,7 @@ class X9K3(strm.Stream):
             self._tsdata = self.args.input
 
     def _args_sidecar(self):
-        try:
-            Path(self.args.sidecar_file).touch()
-        except:
-            self.args.sidecar_file='sidecar.txt'
-            Path(self.args.sidecar_file).touch()
-
+        Path(self.args.sidecar_file).touch()
 
     def _args_hls_tag(self):
         tag_map = {
@@ -220,14 +215,14 @@ class X9K3(strm.Stream):
                 self._write_segment()
                 self.scte35.mk_cue_state()
 
-    def _chk_cue_time(self, pid):
+    def _chk_cue_time(self):
         if self.scte35.cue:
-            self.scte35.cue_time = self._adjusted_pts(self.scte35.cue, pid)
+            self.scte35.cue_time = self._adjusted_pts(self.scte35.cue)
 
-    def _chk_iframe(self, pkt,pkt_pid):
+    def _chk_iframe(self, pkt):
         if self.iframer.parse(pkt):
             self.load_sidecar()
-            self._chk_sidecar_cues(pkt_pid)
+            self._chk_sidecar_cues()
             self._chk_splice_point()
 
     def _chk_live(self, seg_time):
@@ -401,18 +396,17 @@ class X9K3(strm.Stream):
                 for line in sidelines:
                     line = line.decode().strip().split("#", 1)[0]
                     if line:
-                        _,data=line.split(',',1)
-                        cue=Cue(data)
+                        _, data = line.split(",", 1)
+                        cue = Cue(data)
                         insert_pts = self._adjusted_pts(cue)
-                        line = f'{insert_pts},{data}'
+                        line = f"{insert_pts},{data}"
                         blue(f"loading  {line}")
-                        if insert_pts ==0.0:
-                            line = f'{self.now},{data}'
+                        if insert_pts == 0.0:
+                            line = f"{self.now},{data}"
                         self.add2sidecar(line)
                 sidefile.close()
                 self.last_sidelines = sidelines
             self.clobber_file(self.args.sidecar_file)
-
 
     def add2sidecar(self, line):
         """
@@ -424,7 +418,7 @@ class X9K3(strm.Stream):
             self.sidecar.append([insert_pts, cue])
             self.sidecar = deque(sorted(self.sidecar, key=itemgetter(0)))
 
-    def _chk_sidecar_cues(self, pid):
+    def _chk_sidecar_cues(self):
         """
         _chk_sidecar_cues checks the insert pts time
         for the next sidecar cue and inserts the cue if needed.
@@ -439,7 +433,7 @@ class X9K3(strm.Stream):
                     self.scte35.cue = Cue(splice_cue)
                     self.scte35.cue.decode()
                     self.scte35.cue.show()
-                    self._chk_cue_time(pid)
+                    self._chk_cue_time()
                     self._chk_splice_point()
 
     def _discontinuity_seq_plus_one(self):
@@ -468,7 +462,7 @@ class X9K3(strm.Stream):
         if self.next_start + self.args.time > rollover:
             self._reset_stream()
 
-    def _adjusted_pts(self, cue, pid=None):
+    def _adjusted_pts(self, cue):
         pts = 0
         if "pts_time" in cue.command.get():
             pts = cue.command.pts_time
@@ -484,8 +478,8 @@ class X9K3(strm.Stream):
             return None
         cue = super()._parse_scte35(pkt, pid)
         if cue:
-            self._chk_cue_time(pid)
-            self.add2sidecar(f"{self._adjusted_pts(cue, pid)}, {cue.encode()}")
+            self._chk_cue_time()
+            self.add2sidecar(f"{self._adjusted_pts(cue)}, {cue.encode()}")
         return cue
 
     def _parse_tables(self, pkt, pid):
@@ -514,7 +508,7 @@ class X9K3(strm.Stream):
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
-                self._chk_iframe(pkt,pkt_pid)
+                self._chk_iframe(pkt)
         if not self.is_byterange():
             self.active_segment.write(pkt)
 
@@ -622,7 +616,7 @@ class X9K3(strm.Stream):
         a m3u8 input file if it has not been parsed.
         """
         max_media = 101
-        if 'master.m3u8' in media:
+        if "master.m3u8" in media:
             return
         if media not in self.media_list:
             try:
