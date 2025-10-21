@@ -10,6 +10,8 @@ import multiprocessing as mp
 from threefive import reader
 from .x9k3 import X9K3, argue
 
+# import cProfile
+
 
 class ABR:
     """
@@ -48,6 +50,9 @@ class ABR:
         """
         with reader(self.sidecar) as sidefile:
             these_lines = sidefile.readlines()
+        with open(self.sidecar, "w", encoding="utf8") as sided:
+            sided.close()
+        if these_lines:
             for side_file in self.side_files:
                 print(f"Updating {side_file}")
                 with open(side_file, "wb") as side:
@@ -71,13 +76,13 @@ class ABR:
             clobbered.close()
 
     def _chk_master_sidecar(self):
-        if self.sidecar:
+        Path(self.sidecar).touch()
+        side_stat = os.stat(self.sidecar).st_mtime
+        if side_stat != self.last_stat:
+            self.load_sidecar()
+            self.clobber_file(self.sidecar)
             side_stat = os.stat(self.sidecar).st_mtime
-            if side_stat != self.last_stat:
-                self.load_sidecar()
-                self.clobber_file(self.sidecar)
-                side_stat = os.stat(self.sidecar).st_mtime
-                self.last_stat = side_stat
+            self.last_stat = side_stat
 
     def go(self):
         """
