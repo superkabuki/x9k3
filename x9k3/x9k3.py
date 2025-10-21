@@ -21,7 +21,7 @@ from .sliding import SlidingWindow
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "7"
+MAINTAINENCE = "8"
 
 
 def version():
@@ -387,27 +387,6 @@ class X9K3(strm.Stream):
             self.first_segment = False
         self.active_segment = io.BytesIO()
         self.window.slide_panes()
-##
-##    def load_sidecar(self):
-##        """
-##        load_sidecar reads (pts, cue) pairs from
-##        the sidecar file and loads them into X9K3.sidecar
-##        """
-##        if self.args.sidecar_file:
-##            with reader(self.args.sidecar_file) as sidefile:
-##                sidelines = sidefile.readlines()
-##                if sidelines == self.last_sidelines:
-##                    return
-##                for line in sidelines:
-##                    line = line.decode().strip().split("#", 1)[0]
-##                    if line:
-##                        blue(f"loading  {line}")
-##                        if float(line.split(",", 1)[0]) == 0.0:
-##                            line = f'{self.now},{line.split(",",1)[1]}'
-##                        self.add2sidecar(line)
-##                sidefile.close()
-##                self.last_sidelines = sidelines
-##            self.clobber_file(self.args.sidecar_file)
 
     def load_sidecar(self):
         """
@@ -642,7 +621,7 @@ class X9K3(strm.Stream):
         _parse_m3u8_media parse a segment from
         a m3u8 input file if it has not been parsed.
         """
-        max_media = 1010101
+        max_media = 101
         if 'master.m3u8' in media:
             return
         if media not in self.media_list:
@@ -655,8 +634,9 @@ class X9K3(strm.Stream):
             except ERR:
                 blue(f"skipping {media}")
                 self.skipped_segment = True
-            while len(self.media_list) > max_media:
-                self.media_list.popleft()
+            if self.args.live:
+                while len(self.media_list) > max_media:
+                    self.media_list.popleft()
 
     def decode_m3u8(self, manifest=None):
         """
