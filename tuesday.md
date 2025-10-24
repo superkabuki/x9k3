@@ -1,6 +1,4 @@
-### The Best Idea I've had since Tuesday 
-
-### _OR_  How to Make Super Accurate SCTE-35 for ABR HLS with threefive ffmpeg. and x9k3.   
+### How to Make Super Accurate SCTE-35 for ABR HLS with threefive ffmpeg. and x9k3.   
 ---
 <BR>
 
