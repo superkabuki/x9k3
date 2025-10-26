@@ -18,6 +18,7 @@ from m3ufu import M3uFu
 from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
+from threefive import blue
 
 MAJOR = "1"
 MINOR = "0"
@@ -55,7 +56,7 @@ class X9K3(strm.Stream):
         self.media_seq = 0
         self.discontinuity_sequence = 0
         self.first_segment = True
-        self.media_list = deque()
+        self.first_on_page=None
         self.now = None
         self.last_sidelines = ""
         self.started_byte = 0
@@ -615,22 +616,17 @@ class X9K3(strm.Stream):
         _parse_m3u8_media parse a segment from
         a m3u8 input file if it has not been parsed.
         """
-        max_media = 101
         if "master.m3u8" in media:
             return
-        if media not in self.media_list:
+        if media !=self.first_on_page:
             try:
                 self._tsdata = reader(media)
                 for pkt in self.iter_pkts():
                     self._parse(pkt)
                 self._tsdata.close()
-                self.media_list.append(media)
             except ERR:
                 blue(f"skipping {media}")
                 self.skipped_segment = True
-            if self.args.live:
-                while len(self.media_list) > max_media:
-                    self.media_list.popleft()
 
     def decode_m3u8(self, manifest=None):
         """
@@ -642,6 +638,7 @@ class X9K3(strm.Stream):
         else:
             base_uri = ""
         while True:
+            media_list=deque()
             with reader(manifest) as manifesto:
                 m3u8 = manifesto.readlines()
                 for line in m3u8:
@@ -656,8 +653,11 @@ class X9K3(strm.Stream):
                         media = line
                         if base_uri not in media:
                             media = base_uri + media
+                    if media:
+                        media_list.append(media)
                         self._parse_m3u8_media(media)
-
+                self.first_on_page=media_list[0]
+                media_list=deque()
 
 class Timer:
     """
