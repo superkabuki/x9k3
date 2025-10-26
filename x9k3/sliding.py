@@ -45,6 +45,7 @@ class SlidingWindow:
         slide calls self.push_pane with a_pane and then
         calls self.popleft_pane to trim self.panes as needed.
         """
+        blue(f"slide pane. \n Panes:{len(self.panes)}")
         if a_pane:
             self.push_pane(a_pane)
         if len(self.panes) > self.size:
