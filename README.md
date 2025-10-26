@@ -11,7 +11,6 @@
 ---
 </samp>
 
-# [The Best Idea I've had since Tuesday](tuesday.md)
 
 
 # Current Version:  `v1.0.7`
