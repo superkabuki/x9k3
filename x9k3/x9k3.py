@@ -18,11 +18,11 @@ from m3ufu import M3uFu
 from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
-from threefive import blue
+from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "8"
+MAINTAINENCE = "8c"
 
 
 def version():
@@ -56,7 +56,7 @@ class X9K3(strm.Stream):
         self.media_seq = 0
         self.discontinuity_sequence = 0
         self.first_segment = True
-        self.first_on_page=None
+        self.first_on_page = None
         self.now = None
         self.last_sidelines = ""
         self.started_byte = 0
@@ -120,6 +120,9 @@ class X9K3(strm.Stream):
         """
         if self.args.live:
             self.window.size = self.args.window_size
+            if self.window.size > 10:
+                self.window.size = 10  # cap window size
+                blue(f"window size adjusted to {self.window.size}")
 
     def _args_continue_m3u8(self):
         """
@@ -618,7 +621,7 @@ class X9K3(strm.Stream):
         """
         if "master.m3u8" in media:
             return
-        if media !=self.first_on_page:
+        if media != self.first_on_page:
             try:
                 self._tsdata = reader(media)
                 for pkt in self.iter_pkts():
@@ -638,7 +641,7 @@ class X9K3(strm.Stream):
         else:
             base_uri = ""
         while True:
-            media_list=deque()
+            media_list = deque()
             with reader(manifest) as manifesto:
                 m3u8 = manifesto.readlines()
                 for line in m3u8:
@@ -656,8 +659,9 @@ class X9K3(strm.Stream):
                     if media:
                         media_list.append(media)
                         self._parse_m3u8_media(media)
-                self.first_on_page=media_list[0]
-                media_list=deque()
+                self.first_on_page = media_list[0]
+                media_list = deque()
+
 
 class Timer:
     """
@@ -706,7 +710,7 @@ class Timer:
         self.stop(end)
         diff = round((seg_time - self.lap_time) * 0.99, 2)
         if diff > 0:
-            print2(f"throttling {diff}")
+            blue(f"throttling {diff}")
             time.sleep(diff)
         self.start(begin)
 
