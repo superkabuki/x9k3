@@ -140,7 +140,7 @@ def argue():
         "--window_size",
         default=5,
         type=int,
-        help="sliding window size (enables --live) [default:5]",
+        help="sliding window size (enables --live) [default:5 max:10]",
     )
     parser.add_argument(
         "-v",
