@@ -16,7 +16,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/superkabuki/x9k3",
     packages=setuptools.find_packages(),
-    scripts=["bin/x9k3","bin/adbreak3","bin/adinterval",],
+    scripts=["bin/x9k3","bin/adbreak3","bin/adinterval3",],
     platforms="all",
     install_requires=[
         "threefive >= 3.0.59",
