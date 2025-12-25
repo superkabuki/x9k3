@@ -703,7 +703,7 @@ seg145.ts
 
 * included with x9k3
 * adbreak3 is a cli tool to generate SCTE-35 for sidecar files.
-* by default adbreak3 generates 2 SCTE35 Cues with Splice Innserts for CUE-OUT and CUE-IN and writes it to a sidecar file.
+* by default adbreak3 generates 2 SCTE35 Cues with Splice Inserts for CUE-OUT and CUE-IN and writes it to a sidecar file.
 
 ```sed
 a@fu:~$ adbreak3 -h
