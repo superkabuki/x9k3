@@ -1,11 +1,14 @@
-# x9k3 Kabuki
-
+# x9k3 
 # x9k3 Injects SCTE-35 Into HLS 
  
 <samp>
  
-   Yeah, it's been a while but __I brought the good stuff__.
-   <s>Sour Diesel</s> Multi-process __ABR HLS__ added in v1.0.5.
+I'm trying add support for injesting SRT streams. I have SRT working with threefive.
+the issue I'm having with x9k3 is disconnecting and reconnecting takes about 5 seconds longer that I want it to,
+and I'm ironing that out.
+
+Expect a new release with SRT support by February.
+
 
   _Adrian_
 
