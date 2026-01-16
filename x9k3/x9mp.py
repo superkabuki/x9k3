@@ -32,13 +32,24 @@ def do(args):
     abr.go()
 
 
-def ismaster(m3u8):
+def not_master(m3u8):
     """
-    ismaster master.m3u8 detection
+    not_master returns True if
+    m3u8 is not a master.m3u8
     """
     if m3u8 == sys.stdin.buffer:
+        return True
+    if m3u8.startswith(("srt://", "udp://")):
+        return True
+
+
+def is_master(m3u8):
+    """
+    is_master master.m3u8 detection
+    """
+    if not_master(m3u8):
         return False
-    return b"#EXT-X-STREAM-INF" in reader(m3u8).read()
+    return b"#EXT-X-STREAM-INF" in reader(m3u8).read(1316)
 
 
 def cli():
@@ -55,7 +66,7 @@ def cli():
         print(version())
         sys.exit()
     _ = {blue(f"{k} = {v}") for k, v in vars(args).items()}
-    if ismaster(args.input):
+    if is_master(args.input):
         do(args)
     else:
         x9cli()
