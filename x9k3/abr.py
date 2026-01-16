@@ -7,6 +7,9 @@ import os
 import sys
 import time
 import multiprocessing as mp
+
+mp.set_start_method("fork")
+
 from threefive import reader
 from .x9k3 import X9K3, argue
 
@@ -20,7 +23,6 @@ class ABR:
     """
 
     def __init__(self, m3u8_list):
-        #       mp.set_start_method("spawn")
         self.master = None
         self.m3u8_list = m3u8_list
         self.args = argue()
