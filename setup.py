@@ -19,7 +19,7 @@ setuptools.setup(
     scripts=["bin/x9k3","bin/adbreak3","bin/adinterval3",],
     platforms="all",
     install_requires=[
-        "threefive >= 3.0.59",
+        "threefive >= 3.0.69",
         "m3ufu >= 0.0.97",
     ],
     classifiers=[
