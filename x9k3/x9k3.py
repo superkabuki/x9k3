@@ -22,7 +22,7 @@ from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "8c"
+MAINTAINENCE = "8e"
 
 
 def version():
@@ -521,7 +521,7 @@ class X9K3(strm.Stream):
         _last_buff writes antthing left in the
         active_segment buffer for the last segment.
         """
-        buff = self.active_segment.getbuffer()
+        buff = self.active_segment.getvalue()
         if buff:
             self._write_segment()
             time.sleep(0.3)
@@ -535,6 +535,27 @@ class X9K3(strm.Stream):
             with open(self.m3u8uri(), "a", encoding="utf8") as m3u8:
                 m3u8.write("#EXT-X-ENDLIST")
 
+    def _not_m3u8(self):
+        """
+        _not_m3u8 returns True if sys.args.input is not an m3u8 file.
+        """
+        if self.args.input == sys.stdin.buffer:
+            return True
+        if self.args.input.startswith(("srt://", "udp://")):
+            return True
+
+    def _is_stream(self):
+        """
+        _is_stream determine if input is an mpegts stream.
+        """
+        if self._not_m3u8():
+            packet = self._tsdata.read(188)
+            if packet.startswith(b"#"):
+                return False
+            # self._parse(packet)
+            return True
+        return False
+
     def decode(self, func=False):
         """
         decode applies any set args,
@@ -542,10 +563,10 @@ class X9K3(strm.Stream):
         """
         self.apply_args()
         self.timer.start()
-        if isinstance(self.args.input, str) and ("m3u8" in self.args.input):
-            self.decode_m3u8(self.args.input)
-        else:
+        if self._is_stream():
             super().decode()
+        else:
+            self.decode_m3u8(self.args.input)
         self.addendum()
 
     def _retag(self, line, segment_data):
@@ -640,27 +661,28 @@ class X9K3(strm.Stream):
             base_uri = f"{based[0]}/"
         else:
             base_uri = ""
-        while True:
+        #        while True:
+        media_list = deque()
+        with reader(manifest) as manifesto:
+            m3u8 = manifesto.readlines()
+            for line in m3u8:
+                if not line:
+                    blue("NO LINE")
+                    return False
+                line = _clean_line(line)
+                if self._endlist(line):
+                    return False
+                if line.startswith("#"):
+                    media = None
+                else:
+                    media = line
+                    if base_uri not in media:
+                        media = base_uri + media
+                if media:
+                    media_list.append(media)
+                    self._parse_m3u8_media(media)
+            self.first_on_page = media_list[0]
             media_list = deque()
-            with reader(manifest) as manifesto:
-                m3u8 = manifesto.readlines()
-                for line in m3u8:
-                    if not line:
-                        break
-                    line = _clean_line(line)
-                    if self._endlist(line):
-                        return False
-                    if line.startswith("#"):
-                        media = None
-                    else:
-                        media = line
-                        if base_uri not in media:
-                            media = base_uri + media
-                    if media:
-                        media_list.append(media)
-                        self._parse_m3u8_media(media)
-                self.first_on_page = media_list[0]
-                media_list = deque()
 
 
 class Timer:
