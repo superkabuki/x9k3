@@ -1,13 +1,18 @@
 # x9k3 
 # x9k3 Injects SCTE-35 Into HLS 
- 
-<samp>
- 
-I'm trying add support for injesting SRT streams. I have SRT working with threefive.
-the issue I'm having with x9k3 is disconnecting and reconnecting takes about 5 seconds longer that I want it to,
-and I'm ironing that out.
 
-Expect a new release with SRT support by February.
+ # News of The World
+ 
+* <s>I'm trying add support for injesting SRT streams. I have SRT working with threefive.the issue I'm having with x9k3 is disconnecting and reconnecting takes about 5 seconds longer that I want it to,
+and I'm ironing that out.</s>
+* __SRT support__ for input videos is now working.
+* Expect a __new release__ with SRT support __by February__.
+
+* The python folks have making a lot of changes under the hood in the last year, 
+* __python 3.14__ aka "the big thread fix" makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
+
+* __x9k3 runs perfectly on python3__, but __x9k3 runs best on pypy3__.  It's all about the __JIT__ man.
+
 
 
   _Adrian_
@@ -18,7 +23,7 @@ Expect a new release with SRT support by February.
 
 
 
-# Current Version:  `v1.0.7`  Test Version `v1.0.8c` 
+# Current Version:  `v1.0.7`  Test Version: `v1.0.8e`   _(01/16/2026)_ 
 # `Features`
    * __SCTE-35 Cues__ in __Mpegts Streams__ are Translated into __HLS tags__.
    * __SCTE-35 Cues can be added from a [Sidecar File](#sidecar-files)__.
