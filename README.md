@@ -7,7 +7,7 @@
 and I'm ironing that out.</s>
 * __SRT support__ for input videos is now working.
 * Expect a __new release__ with SRT support __by February__.
-
+* __I am no longer banned from the python dev site__, however they are __still deleting most of my comments and questions__. It's not me, I'm trying to get along with folks.... 
 * The python folks have making a lot of changes under the hood in the last year, 
 * __python 3.14__ aka "the big thread fix" makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
 
