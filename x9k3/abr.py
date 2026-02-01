@@ -7,11 +7,11 @@ import os
 import sys
 import time
 import multiprocessing as mp
+from threefive import reader
+from .x9k3 import X9K3, argue
 
 mp.set_start_method("fork")
 
-from threefive import reader
-from .x9k3 import X9K3, argue
 
 # import cProfile
 
@@ -24,7 +24,7 @@ class ABR:
 
     def __init__(self, m3u8_list):
         self.master = None
-        self.m3u8_list = m3u8_list
+        self.m3u8_list = m3u8_list # list of m3u8 manifests for renditions [index.m3u8, index2.m3u8]
         self.args = argue()
         self.sidecar = self.args.sidecar_file
         self.side_files = []
