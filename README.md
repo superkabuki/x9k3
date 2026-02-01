@@ -20,7 +20,7 @@ and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 
 
 
-# Current Version:  `v1.0.9a`  _(02/3/2026)_ 
+# Current Version:  `v1.0.11`  _(02/3/2026)_ 
 # `Features`
 
    * __All SCTE-35 HLS Tags__ are Supported.
