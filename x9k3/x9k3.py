@@ -22,7 +22,7 @@ from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "11"
+MAINTAINENCE = "13"
 
 
 def version():
@@ -400,9 +400,11 @@ class X9K3(strm.Stream):
                 for line in sidelines:
                     line = line.decode().strip().split("#", 1)[0]
                     if line:
-                        _, data = line.split(",", 1)
+                        pts, data = line.split(",", 1)
                         cue = Cue(data)
                         insert_pts = self._adjusted_pts(cue)
+                        if insert_pts ==-1.0:
+                            insert_pts = pts
                         line = f"{insert_pts},{data}"
                         blue(f"loading  {line}")
                         if insert_pts == 0.0:
@@ -467,7 +469,7 @@ class X9K3(strm.Stream):
             self._reset_stream()
 
     def _adjusted_pts(self, cue):
-        pts = 0
+        pts = -1.0
         if "pts_time" in cue.command.get():
             pts = cue.command.pts_time
             pts_adjust = cue.info_section.pts_adjustment
