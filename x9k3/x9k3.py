@@ -537,26 +537,20 @@ class X9K3(strm.Stream):
             with open(self.m3u8uri(), "a", encoding="utf8") as m3u8:
                 m3u8.write("#EXT-X-ENDLIST")
 
-    def _not_m3u8(self):
+    def _is_stream(self):
         """
-        _not_m3u8 returns True if sys.args.input is not an m3u8 file.
+        _is_stream determine if input is an mpegts stream.
         """
         if self.args.input == sys.stdin.buffer:
             return True
         if self.args.input.startswith(("srt://", "udp://")):
             return True
-
-    def _is_stream(self):
-        """
-        _is_stream determine if input is an mpegts stream.
-        """
-        if self._not_m3u8():
-            packet = self._tsdata.read(188)
-            if packet.startswith(b"#"):
-                return False
-            # self._parse(packet)
-            return True
-        return False
+        packet = self._tsdata.read(188)
+        if packet.startswith(b"#"):
+            return False
+        self._parse(packet)
+        return True
+        #return False
 
     def decode(self, func=False):
         """
