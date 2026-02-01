@@ -7,18 +7,16 @@ clean:
 	rm -f dist/*
 	rm -rf build/*
 
-pypy3: clean
-	$(PYPY3)  -m build
-	$(PYPY3) -m pip install . 	
-
-install: clean pkg
-	$(PY3)  -m pip install .	
-
 pkg: clean
-	$(PY3) -m build
+	$(PY3) -m build -n
+
+pypy3:  pkg
+	$(PYPY3) -m pip install . --break-system-packages	
+
+install: pkg
+	$(PY3)  -m pip install . --break-system-packages	
 	
 upload: clean pkg	
 	twine upload dist/*
-
 
 
