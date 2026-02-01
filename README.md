@@ -5,13 +5,9 @@
  # News of The World
  
 * <s>I'm trying add support for injesting SRT streams. I have SRT working with threefive.the issue I'm having with x9k3 is disconnecting and reconnecting takes about 5 seconds longer that I want it to,
-and I'm ironing that out.</s>
-* __SRT support__ for input videos is now working.
+and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 * Expect a __new release__ with SRT support __by February__.
-* __I am no longer banned from the python dev site__, however they are __still deleting most of my comments and questions__. It's not me....I swear.
-* The python folks have making a lot of changes under the hood in the last year, 
-* __python 3.14__ aka "the big thread fix" makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
-* python 3.14 is the slowest python in recent history.__The gil?__ We don't need no stinking gil, what we do need is __a working JIT, I can't get it to build__.
+* __python 3.14__ makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
 * __x9k3 runs perfectly on python3__, but __x9k3 runs best on pypy3__.  It's all about the __JIT__ man.
 
 
