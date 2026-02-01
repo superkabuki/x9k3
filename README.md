@@ -1,5 +1,3 @@
-<img width="924" height="85" alt="image" src="https://github.com/user-attachments/assets/75b0a5a0-b9e3-44ca-8322-720bdc6858e9" />
-
 
 # x9k3 
 # x9k3 Injects SCTE-35 Into HLS 
@@ -10,10 +8,10 @@
 and I'm ironing that out.</s>
 * __SRT support__ for input videos is now working.
 * Expect a __new release__ with SRT support __by February__.
-* __I am no longer banned from the python dev site__, however they are __still deleting most of my comments and questions__. It's not me, I'm trying to get along with folks.... 
+* __I am no longer banned from the python dev site__, however they are __still deleting most of my comments and questions__. It's not me....I swear.
 * The python folks have making a lot of changes under the hood in the last year, 
 * __python 3.14__ aka "the big thread fix" makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
-
+* python 3.14 is the slowest python in recent history.__The gil?__ We don't need no stinking gil, what we do need is __a working JIT, I can't get it to build__.
 * __x9k3 runs perfectly on python3__, but __x9k3 runs best on pypy3__.  It's all about the __JIT__ man.
 
 
@@ -26,16 +24,20 @@ and I'm ironing that out.</s>
 
 
 
-# Current Version:  `v1.0.7`  Test Version: `v1.0.8e`   _(01/16/2026)_ 
+# Current Version:  `v1.0.9`  _(02/3/2026)_ 
 # `Features`
+
+   * __All SCTE-35 HLS Tags__ are Supported.
+   * __Add SCTE-35 Tags to ABR HLS__
+   * __Segment MPEGTS streams into HLS and transfer SCTE-35 or add new SCTE-35 Tags__
    * __SCTE-35 Cues__ in __Mpegts Streams__ are Translated into __HLS tags__.
    * __SCTE-35 Cues can be added from a [Sidecar File](#sidecar-files)__.
    * Segments are __Split on SCTE-35 Cues__ as needed.
    * Segments __Start on iframes__.
    * Supports __h264__ and __h265__ .
-   * __Multi-protocol.__ Input sources may be __Files, Http(s), Multicast, and Unicast UDP streams__.
+   * __Multi-protocol.__ Input sources may be __Files, Http(s), Multicast, SRT, or Unicast UDP streams__.
    * Supports [__Live__](https://github.com/futzu/scte35-hls-x9k3#live) __Streaming__.
-   * [__amt-play__ ](https://github.com/vivoh-inc/amt-play)uses x9k3.
+
 ---
 
 # Documentation
