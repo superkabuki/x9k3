@@ -2,18 +2,14 @@
 # x9k3 
 # x9k3 Injects SCTE-35 Into HLS 
 
- # News of The World
- 
+ # x9k3 News
 * <s>I'm trying add support for injesting SRT streams. I have SRT working with threefive.the issue I'm having with x9k3 is disconnecting and reconnecting takes about 5 seconds longer that I want it to,
 and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 * <s>Expect a __new release__ with SRT support __by February__.</s> __x9k3 v1.0.13 was released 01/31/2026.__
-* __python 3.14__ makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
-* __x9k3 runs perfectly on python3__, but __x9k3 runs best on pypy3__.  It's all about the __JIT__ man.
-
-
+* __python 3.14__ makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ on __01/14/2026.__
+* __x9k3 runs perfectly on python3__, but __x9k3 runs best on pypy3__.  It's all about the __JIT__ man. 
 
   _Adrian_
-
 
 ---
 </samp>
