@@ -6,7 +6,7 @@
  
 * <s>I'm trying add support for injesting SRT streams. I have SRT working with threefive.the issue I'm having with x9k3 is disconnecting and reconnecting takes about 5 seconds longer that I want it to,
 and I'm ironing that out.</s> __SRT support__ for input videos is now working.
-* Expect a __new release__ with SRT support __by February__.
+* <s>Expect a __new release__ with SRT support __by February__.</s> __x9k3 v1.0.13 was released 01/31/2026.__
 * __python 3.14__ makes changes to the default __multiprocessing spawn__ method, I __fixed__ that __in x9k3__ last night.
 * __x9k3 runs perfectly on python3__, but __x9k3 runs best on pypy3__.  It's all about the __JIT__ man.
 
@@ -20,7 +20,7 @@ and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 
 
 
-# Current Version:  `v1.0.13`  _(02/3/2026)_ 
+# Current Version:  `v1.0.13`  _(01/31/2026)_ 
 # `Features`
 
    * __All SCTE-35 HLS Tags__ are Supported.
@@ -55,11 +55,11 @@ __What`s up with all the releases?__
       * [Adding SCTE-35 in real time](#in-live-mode-you-can-do-dynamic-cue-injection-with-a-sidecar-file)
       * [SCTE-35 Splice Immediate ](#sidecar-files-can-now-accept-0-as-the-pts-insert-time-for-splice-immediate) (_not the same as real time_)
       * __SCTE-35 Generation__ with [adbreak3](#adbreak3)
-    * [__Playlists__](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it x9k3 as input)_
+    * [__Playlists__](#playlists) _(make a playlist of MPEGTS or M3u8 files and feed it to x9k3 as input)_
 * HLS Stuff
     * [__HLS as Input__](#hls-as-input) 
     * [__ABR HLS__](#abr-hls) _(there are some terms and conditions)_
-       * [ABR in Code](#abr-in-code) _(in less than ten lines)_
+       * [__ABR__ in Code](#abr-in-code) _(in less than ten lines)_
     * [__Byterange__ HLS](#byterange) 
     * [__Live__ HLS](#live) _(sliding windows, deleting segments, all that jazz)_
     * [__Looping__ videos](#--replay) _(play the same thing over and over)_
@@ -67,16 +67,16 @@ __What`s up with all the releases?__
     * [CUE-OUT](#cue-out) 
     * [CUE-IN](#cue-in)
 * [SCTE-35 __Tags__](#supported-hls--tags)
-    * [#EXT-X-CUE](#x_cue)
+    * [__#EXT-X-CUE__](#x_cue)
     * [__#EXT-X-SCTE35__](#x_scte35)
-    * [#EXT-X-DATERANGE](#x_daterange)
+    * [__#EXT-X-DATERANGE__](#x_daterange)
     * [__#EXT-X-SPLICEPOINT__](#x_splicepoint)
 
 
 
 
 # `Install`
-* Use pip to install the the x9k3 lib and  executable script x9k3 (_will install threefive,m3ufu too_)
+* Use __pip__ to __install__ the __x9k3 lib__ and the executable scripts __x9k3__, __adbreak3__, and __adinterval3__.
 ```lua
 # python3
 
@@ -86,6 +86,8 @@ python3 -mpip install x9k3
 
 pypy3 -mpip install x9k3
 ```
+
+* _Both OpenBSD and Debian now require '--break-system-packages' to be appended to the pip install command if you are not using a venv._
 
 [⇪ top](#documentation)
 
