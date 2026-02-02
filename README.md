@@ -106,7 +106,20 @@ pypy3 -mpip install x9k3
 
 
 
-# `cli`
+# `cli` 
+
+### `do the simplest thing that can possibly work`
+
+* There are __a lot of command line switches__ available, but __you do not have to use them all.__ <BR>
+
+Try it like this first 
+
+```js
+x9k3 -i video.ts -o output_dir
+```
+
+later you can add as many switches as you like. 
+
 
 ### Switches
 ```smalltalk
@@ -144,7 +157,7 @@ optional arguments:
                         Flag to disable adding #EXT-X-ADRIAN-IS-COOL tags at
                         splice points [default:False]
 
-  -N, --no-throttle, --no_throttle              
+  -N, --no-throttle,             
                         Flag to disable live throttling [default:False]
 
   -o OUTPUT_DIR, --output_dir OUTPUT_DIR
