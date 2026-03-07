@@ -659,26 +659,29 @@ class X9K3(strm.Stream):
             base_uri = ""
         #        while True:
         media_list = deque()
-        with reader(manifest) as manifesto:
-            m3u8 = manifesto.readlines()
-            for line in m3u8:
-                if not line:
-                    blue("NO LINE")
+        while True:
+            with reader(manifest) as manifesto:
+                m3u8 = manifesto.readlines()
+                if not m3u8:
                     return False
-                line = _clean_line(line)
-                if self._endlist(line):
-                    return False
-                if line.startswith("#"):
-                    media = None
-                else:
-                    media = line
-                    if base_uri not in media:
-                        media = base_uri + media
-                if media:
-                    media_list.append(media)
-                    self._parse_m3u8_media(media)
-            self.first_on_page = media_list[0]
-            media_list = deque()
+                for line in m3u8:
+                    if not line:
+                        blue("NO LINE")
+                        return False
+                    line = _clean_line(line)
+                    if self._endlist(line):
+                        return False
+                    if line.startswith("#"):
+                        media = None
+                    else:
+                        media = line
+                        if base_uri not in media:
+                            media = base_uri + media
+                    if media:
+                        media_list.append(media)
+                        self._parse_m3u8_media(media)
+                self.first_on_page = media_list[0]
+                media_list = deque()
 
 
 class Timer:
