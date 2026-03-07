@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-
-# multiprocess version with ABR support
-from x9k3.x9mp import cli
-
-cli()
