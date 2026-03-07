@@ -22,7 +22,7 @@ from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "13"
+MAINTAINENCE = "15"
 
 
 def version():
@@ -56,7 +56,8 @@ class X9K3(strm.Stream):
         self.media_seq = 0
         self.discontinuity_sequence = 0
         self.first_segment = True
-        self.first_on_page = None
+       #self.first_on_page = None
+        self.media_list=[]
         self.now = None
         self.last_sidelines = ""
         self.started_byte = 0
@@ -403,7 +404,7 @@ class X9K3(strm.Stream):
                         pts, data = line.split(",", 1)
                         cue = Cue(data)
                         insert_pts = self._adjusted_pts(cue)
-                        if insert_pts ==-1.0:
+                        if insert_pts == -1.0:
                             insert_pts = pts
                         line = f"{insert_pts},{data}"
                         blue(f"loading  {line}")
@@ -550,7 +551,7 @@ class X9K3(strm.Stream):
             return False
         self._parse(packet)
         return True
-        #return False
+        # return False
 
     def decode(self, func=False):
         """
@@ -638,15 +639,15 @@ class X9K3(strm.Stream):
         """
         if "master.m3u8" in media:
             return
-        if media != self.first_on_page:
-            try:
-                self._tsdata = reader(media)
-                for pkt in self.iter_pkts():
-                    self._parse(pkt)
-                self._tsdata.close()
-            except ERR:
-                blue(f"skipping {media}")
-                self.skipped_segment = True
+       # if media not in self.media_list:
+        try:
+            self._tsdata = reader(media)
+            for pkt in self.iter_pkts():
+                self._parse(pkt)
+            self._tsdata.close()
+        except ERR:
+            blue(f"skipping {media}")
+            self.skipped_segment = True
 
     def decode_m3u8(self, manifest=None):
         """
@@ -657,16 +658,14 @@ class X9K3(strm.Stream):
             base_uri = f"{based[0]}/"
         else:
             base_uri = ""
-        #        while True:
-        media_list = deque()
+        self.media_list = []
         while True:
             with reader(manifest) as manifesto:
                 m3u8 = manifesto.readlines()
                 if not m3u8:
                     return False
                 for line in m3u8:
-                    if not line:
-                        blue("NO LINE")
+                    if not line:  
                         return False
                     line = _clean_line(line)
                     if self._endlist(line):
@@ -678,10 +677,10 @@ class X9K3(strm.Stream):
                         if base_uri not in media:
                             media = base_uri + media
                     if media:
-                        media_list.append(media)
-                        self._parse_m3u8_media(media)
-                self.first_on_page = media_list[0]
-                media_list = deque()
+                        if media not in self.media_list:
+                            self.media_list.append(media)
+                            self._parse_m3u8_media(media)
+            self.media_list =self.media_list[:101]
 
 
 class Timer:
