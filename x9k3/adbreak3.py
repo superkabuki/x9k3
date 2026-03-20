@@ -169,7 +169,7 @@ def cue_out(event_id, pts, duration, sidecar, preroll):
     """
     cue_out generates a SCTE-35 cue with out of network set to True
     """
-    if args.pts == 0.0:
+    if pts == 0.0:
         cue = mk_splice_insert(event_id, duration=duration, out=True).encode()
     else:
         cue = mk_splice_insert(event_id, pts=pts, duration=duration, out=True).encode()
