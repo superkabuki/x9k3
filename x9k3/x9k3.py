@@ -90,6 +90,8 @@ class X9K3(strm.Stream):
         }
         if self.args.hls_tag not in tag_map:
             raise ValueError(f"hls tag  must be in {tag_map.keys()}")
+        if self.args.hls_tag=='x_daterange':  # PDT required for daterange
+            self.args.program_date_time = True          
         self.scte35.tag_method = tag_map[self.args.hls_tag]
 
     def _args_output_dir(self):
@@ -728,7 +730,7 @@ class Timer:
         to simulate live streaming.
         """
         self.stop(end)
-        diff = round((seg_time - self.lap_time) * 0.97, 2)
+        diff = round((seg_time - self.lap_time) * 0.99, 2)
         if diff > 0:
             blue(f"throttling {diff}")
             time.sleep(diff)
