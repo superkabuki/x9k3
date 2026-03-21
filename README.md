@@ -16,7 +16,11 @@ and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 
 
 
-# Current Version:  `v1.0.13`  _(01/31/2026)_ 
+# Current Version:  `v1.0.17`  _(Sat, 21 Mar 2026 01:20:56 -0400)_ 
+* Fixed adbreak3
+* slowed deletion of files when delete is enabled.
+* Auto-Enabbled Program Date Time tags when EXT-X-DATARANGE tags are used.
+
 # `Features`
 
    * __All SCTE-35 HLS Tags__ are Supported.
