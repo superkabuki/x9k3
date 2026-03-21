@@ -730,7 +730,7 @@ class Timer:
         to simulate live streaming.
         """
         self.stop(end)
-        diff = round((seg_time - self.lap_time) * 0.99, 2)
+        diff = round((seg_time - self.lap_time) * 0.97, 2)
         if diff > 0:
             blue(f"throttling {diff}")
             time.sleep(diff)
