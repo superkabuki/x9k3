@@ -25,12 +25,9 @@ class SlidingWindow:
         """
         popped = self.panes.popleft()
         if self.delete:
-            self.delete_queue.append(popped.name)
-            if len(self.delete_queue) > self.size*3:
-                deleteme=self.delete_queue.popleft()
-                Path(deleteme).touch()
-                unlink(deleteme)
-                blue(f"deleted {deleteme}")
+            Path(popped.name).touch()
+            unlink(popped.name)
+            blue(f"deleted {popped.name}")
 
     def push_pane(self, a_pane):
         """
