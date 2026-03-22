@@ -16,10 +16,10 @@ and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 
 
 
-# Current Version:  `v1.0.17`  _(Sat, 21 Mar 2026 01:20:56 -0400)_ 
+# Current Version:  `v1.0.19`  _(Sun Mar 22 05:10:07 PM EDT 2026)_ 
 * Fixed adbreak3
-* slowed deletion of files when delete is enabled.
 * Auto-Enabbled Program Date Time tags when EXT-X-DATARANGE tags are used.
+* other top secret Jmes Bond type stuff.
 
 # `Features`
 
