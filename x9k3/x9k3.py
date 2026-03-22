@@ -22,7 +22,7 @@ from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "17"
+MAINTAINENCE = "19"
 
 
 def version():
@@ -48,9 +48,9 @@ class X9K3(strm.Stream):
         self.sidecar = deque()
         self.timer = Timer()
         self.m3u8 = "index.m3u8"
-        self.window = SlidingWindow()
         self.segnum = None
         self.args = argue()
+        self.window = SlidingWindow()
         self.started = None
         self.next_start = None
         self.media_seq = 0
@@ -107,15 +107,10 @@ class X9K3(strm.Stream):
         """
         I really expected to do more here.
         """
-        flags = deque([self.args.program_date_time, self.args.delete, self.args.replay])
-        #       if self._chk_flags(flags):
-        flags.popleft()  # pop self.args.program_date_time
-        if self._chk_flags(flags):
+        if True in [self.args.program_date_time, self.args.delete, self.args.replay]:
             self.args.live = True
             self.window.delete = True
-        flags.popleft()  # pop self.args.delete
-        flags.popleft()  # pop self.args.replay
-
+ 
     def _args_window_size(self):
         """
         _args_window_size sets sliding window size
