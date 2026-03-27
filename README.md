@@ -14,7 +14,8 @@ and I'm ironing that out.</s> __SRT support__ for input videos is now working.
 ---
 </samp>
 
-# Current Version:  `v1.0.19`  _(Sun Mar 22 05:10:07 PM EDT 2026)_ 
+# Current Version:  `v1.0.21`  
+* Updated threefive to 3.0.83
 * Fixed adbreak3
 * Auto-Enabbled Program Date Time tags when EXT-X-DATARANGE tags are used.
 * other top secret Jmes Bond type stuff.
