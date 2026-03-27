@@ -22,7 +22,7 @@ from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "19"
+MAINTAINENCE = "21"
 
 
 def version():
