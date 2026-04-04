@@ -34,11 +34,6 @@ and I'm ironing that out.</s> __SRT support__ for input videos is now working.
    * Supports [__Live__](https://github.com/futzu/scte35-hls-x9k3#live) __Streaming__.
 
 ---
-# Want to see something cool?
-I'm working with a friend of mine on his HLS analyzing web app.  This is why he made threefive.js, which is pretty damn good actually.
-Stay tuned for details!
-<img width="1187" height="529" alt="image" src="https://github.com/user-attachments/assets/a3987808-b48e-4402-a750-8bf229770d17" />
-
 
 
 # Documentation
