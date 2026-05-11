@@ -10,7 +10,7 @@ import multiprocessing as mp
 from threefive import reader
 from .x9k3 import X9K3, argue
 
-mp.set_start_method("fork")
+# mp.set_start_method("fork")
 
 
 # import cProfile
