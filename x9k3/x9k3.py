@@ -550,6 +550,20 @@ class X9K3(strm.Stream):
         return True
         # return False
 
+    def no_mp_decode(self,func=False):
+        """
+        no_mp_decode do not use mp for decode
+        """
+        num_pkts = 1400
+        for pkt in self.iter_pkts(num_pkts=num_pkts):
+            if not pkt:
+                break
+   #         if pkt[6] != 255:
+            cue = self._parse(pkt)
+            if cue:
+                func(cue)
+        return False        
+
     def decode(self, func=False):
         """
         decode applies any set args,
@@ -558,7 +572,7 @@ class X9K3(strm.Stream):
         self.apply_args()
         self.timer.start()
         if self._is_stream():
-            super().decode()
+            self.no_mp_decode()
         else:
             self.decode_m3u8(self.args.input)
         self.addendum()
