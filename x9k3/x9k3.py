@@ -19,10 +19,11 @@ from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
 from threefive import blue, red
+from threefive.throttle import Throttle
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "23"
+MAINTAINENCE = "24"
 
 
 def version():
@@ -32,6 +33,19 @@ def version():
     """
     return f"{MAJOR}.{MINOR}.{MAINTAINENCE}"
 
+
+class SupaThrottle(Throttle):
+
+    def _print_throttle(self,diff):
+        print(f"throttled --> {diff}", file=sys.stderr, end='\r')
+
+    def _set_start(self, pts):
+        """
+        _set_start set first and actualstart
+        """
+        self.first = pts
+        self.actualstart = time.perf_counter()
+        
 
 class X9K3(strm.Stream):
     """
@@ -502,6 +516,8 @@ class X9K3(strm.Stream):
         """
         _parse is run on every packet.
         """
+        if not pkt:
+            return
         super()._parse(pkt)
         self.now_byte += len(pkt)
         pkt_pid = self._parse_info(pkt)
@@ -550,6 +566,19 @@ class X9K3(strm.Stream):
         return True
         # return False
 
+    def rt(self, func=False):
+        throttler = SupaThrottle()        
+        for pkt in self.iter_pkts():
+            if not pkt:
+                break
+            if pkt[6] != 255:
+                cue = self._parse(pkt)
+                if cue:
+                    cue.show()
+                throttler.throttle(pkt)
+            
+        return False
+
     def no_mp_decode(self,func=False):
         """
         no_mp_decode do not use mp for decode
@@ -558,10 +587,10 @@ class X9K3(strm.Stream):
         for pkt in self.iter_pkts(num_pkts=num_pkts):
             if not pkt:
                 break
-   #         if pkt[6] != 255:
-            cue = self._parse(pkt)
-            if cue:
-                func(cue)
+            if pkt[6] != 255:
+                cue = self._parse(pkt)
+                if cue:
+                    cue.show()
         return False        
 
     def decode(self, func=False):
@@ -572,7 +601,10 @@ class X9K3(strm.Stream):
         self.apply_args()
         self.timer.start()
         if self._is_stream():
-            self.no_mp_decode()
+            if self.args.live:
+                self.rt(func=func)
+            else:
+                self.no_mp_decode(func=func)
         else:
             self.decode_m3u8(self.args.input)
         self.addendum()
@@ -651,15 +683,21 @@ class X9K3(strm.Stream):
         if "master.m3u8" in media:
             return
        # if media not in self.media_list:
-        try:
-            self._tsdata = reader(media)
-            for pkt in self.iter_pkts():
-                self._parse(pkt)
-            self._tsdata.close()
-        except ERR:
-            blue(f"skipping {media}")
-            self.skipped_segment = True
+     #   try:
+        self._tsdata = reader(media)
+        if self.args.live:
+            self.rt()
+        else:
+            self.no_mp_decode()
 
+##            for pkt in self.iter_pkts():
+##                self._parse(pkt)
+
+        self._tsdata.close()
+       # except ERR:
+       #     blue(f"skipping {media}")
+     #       self.skipped_segment = True
+            
     def decode_m3u8(self, manifest=None):
         """
         decode_m3u8 is called when the input file is a m3u8 playlist.
@@ -685,7 +723,7 @@ class X9K3(strm.Stream):
                         media = None
                     else:
                         media = line
-                        if base_uri not in media:
+                        if base_uri not in media and not media.startswith('http'):
                             media = base_uri + media
                     if media:
                         if media not in self.media_list:
@@ -738,8 +776,9 @@ class Timer:
         throttle is called to slow segment creation
         to simulate live streaming.
         """
+        return 
         self.stop(end)
-        diff = round((seg_time - self.lap_time) * 0.97, 2)
+        diff = round((seg_time - self.lap_time) * 0.95, 2)
         if diff > 0:
             blue(f"throttling {diff}")
             time.sleep(diff)
