@@ -1,19 +1,11 @@
 
-# x9k3 
-# x9k3 Injects SCTE-35 Into HLS 
+# `x9k3` 
+### x9k3 Injects SCTE-35 Into HLS 
+___
 
- # x9k3 News
-*  __SRT support__ for input videos is now working.
-* __throttling__ is now handled by a nanosecond accurate timer.
-* __SCTE-35 part 2 support__ for Event Descriptors and Property objects.  
-  _Adrian_
+### Current Version:  `v1.0.25`  
 
----
-</samp>
-
-# Current Version:  `v1.0.25`  
-
-# `Features`
+### `Features`
 
    * __All SCTE-35 HLS Tags__ are Supported.
    * __Add SCTE-35 Tags to ABR HLS__
@@ -25,17 +17,18 @@
    * Supports __h264__ and __h265__ .
    * __Multi-protocol.__ Input sources may be __Files, Http(s), Multicast, SRT, or Unicast UDP streams__.
    * Supports [__Live__](https://github.com/futzu/scte35-hls-x9k3#live) __Streaming__.
+___
 
----
+ ### `News`
+ 
+*  __SRT support__ for input videos is now working.
+* __throttling__ is now handled by a nanosecond accurate timer.
+* __SCTE-35 part 2 support__ for __Event Descriptors__ and __Property__ objects.  
+  _Adrian_
 
+___
 
-# Documentation
-
-### Q. 
-__What`s up with all the releases?__
-
-### A.
- __Whenever I figure something out or fix a bug, I make a new release.__ I'm not going to make you wait for a bug fix. This way, releases are incremental, rather than  brand new software. Unless I have a really really good reason not to, I maintain backwards compatibilty and the interface, and by interface I mean function and method calls and such. New releases are designed to work with your existing code.<BR> __Sometimes I just make a stupid mistake doing the build and have to do a new one__.
+## Documentation
 
 * [Install](#install)
 * Use 
