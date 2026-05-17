@@ -18,7 +18,6 @@ from m3ufu import M3uFu
 from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
-from threefive import blue, red
 from threefive.throttle import Throttle
 
 MAJOR = "1"
