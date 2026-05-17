@@ -516,8 +516,6 @@ class X9K3(strm.Stream):
         """
         _parse is run on every packet.
         """
-        if not pkt:
-            return
         super()._parse(pkt)
         self.now_byte += len(pkt)
         pkt_pid = self._parse_info(pkt)
@@ -568,14 +566,12 @@ class X9K3(strm.Stream):
 
     def rt(self, func=False):
         throttler = SupaThrottle()        
+
         for pkt in self.iter_pkts():
-            if not pkt:
-                break
-            if pkt[6] != 255:
-                cue = self._parse(pkt)
-                if cue:
-                    cue.show()
-                throttler.throttle(pkt)
+            cue = self._parse(pkt)
+            if cue:
+                cue.show()
+            throttler.throttle(pkt)
             
         return False
 
@@ -587,10 +583,10 @@ class X9K3(strm.Stream):
         for pkt in self.iter_pkts(num_pkts=num_pkts):
             if not pkt:
                 break
-            if pkt[6] != 255:
-                cue = self._parse(pkt)
-                if cue:
-                    cue.show()
+   #         if pkt[6] != 255:
+            cue = self._parse(pkt)
+            if cue:
+                func(cue)
         return False        
 
     def decode(self, func=False):
