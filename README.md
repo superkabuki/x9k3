@@ -118,6 +118,9 @@ x9k3 -i video.ts -o output_dir
 
 later you can add as many switches as you like. 
 
+> __Super Important tip__, `-t TIME, --time TIME  Segment time in seconds [default:2]` __can be a float__. If you are adding SCTE-35 to existing HLS and want to retain the segments as much as possible, if the segment times are mostly 1.92,
+> put `-t 1.92` .
+  
 
 ### Switches
 ```smalltalk
@@ -213,11 +216,11 @@ optional arguments:
 #### `https stream for input, and writing segments to an output directory`
    *  directory will be created if it does not exist.
  ```smalltalk
-   x9k3 -i https://so.slo.me/longb.ts --output_dir /home/a/variant0
+   x9k3 -i https://iodisco.com/neworder.ts --output_dir /home/a/variant0
  ```
 #### `https hls m3u8 for input, and inserting SCTE-35 from a sidecar file, and continuing from a previously create index.m3u8 in the output dir`
  ```smalltalk
-   x9k3 -i https://slow.golf/longb.m3u8 --output_dir /home/a/variant0 -continue_m3u8 -s sidecar.txt
+   x9k3 -i https://bigcorp.ltd/longb2.m3u8 --output_dir /home/a/variant0 -continue_m3u8 -s sidecar.txt
  ```  
 #### `using stdin as input`
    ```smalltalk
