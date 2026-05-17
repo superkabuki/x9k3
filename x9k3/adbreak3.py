@@ -152,7 +152,7 @@ def show_cue(new_cue):
     show_cue displays cue data
     """
     cue = Cue(new_cue)
-    cue.decode()
+    cue.show()
     head = "\t\tCUE-OUT"
     body = f"   PTS:{cue.command.pts_time}   Id:{cue.command.splice_event_id}"
     tail = f"   Duration: {cue.command.break_duration}"
