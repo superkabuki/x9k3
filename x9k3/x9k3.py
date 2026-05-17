@@ -564,15 +564,18 @@ class X9K3(strm.Stream):
         return True
         # return False
 
-    def rt(self, func=False):
-        throttler = SupaThrottle()        
-
-        for pkt in self.iter_pkts():
+    def _parse_pkt(self,pkt):
             cue = self._parse(pkt)
             if cue:
                 cue.show()
+                
+    def rt(self, func=False):
+        throttler = SupaThrottle()        
+        for pkt in self.iter_pkts():
+            if not pkt:
+                break
+            self._parse_pkt(pkt)
             throttler.throttle(pkt)
-            
         return False
 
     def no_mp_decode(self,func=False):
@@ -583,10 +586,7 @@ class X9K3(strm.Stream):
         for pkt in self.iter_pkts(num_pkts=num_pkts):
             if not pkt:
                 break
-   #         if pkt[6] != 255:
-            cue = self._parse(pkt)
-            if cue:
-                func(cue)
+            self._parse_pkt(pkt)        
         return False        
 
     def decode(self, func=False):
