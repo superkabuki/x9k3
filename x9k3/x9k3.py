@@ -18,6 +18,7 @@ from m3ufu import M3uFu
 from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
+from threefive import blue, red
 from threefive.throttle import Throttle
 
 MAJOR = "1"
@@ -32,6 +33,20 @@ def version():
     """
     return f"{MAJOR}.{MINOR}.{MAINTAINENCE}"
 
+
+def ssleep(duration):
+    """
+    ssleep- a more accurate sleep.
+    """
+    now = time.perf_counter()
+    end = now + duration
+    buff=0.002
+    if duration > buff:
+        time.sleep(duration - buff)
+    # witness on a spin-lock       
+    while time.perf_counter_ns() < end:
+        pass
+    
 
 class SupaThrottle(Throttle):
 
@@ -569,12 +584,12 @@ class X9K3(strm.Stream):
                 cue.show()
                 
     def rt(self, func=False):
-        throttler = SupaThrottle()        
+     #   throttler = SupaThrottle()        
         for pkt in self.iter_pkts():
             if not pkt:
                 break
             self._parse_pkt(pkt)
-            throttler.throttle(pkt)
+       #     throttler.throttle(pkt)
         return False
 
     def no_mp_decode(self,func=False):
@@ -771,12 +786,11 @@ class Timer:
         throttle is called to slow segment creation
         to simulate live streaming.
         """
-        return 
         self.stop(end)
-        diff = round((seg_time - self.lap_time) * 0.95, 2)
+        diff = round((seg_time - self.lap_time) , 6)
         if diff > 0:
             blue(f"throttling {diff}")
-            time.sleep(diff)
+            ssleep(diff)
         self.start(begin)
 
 
