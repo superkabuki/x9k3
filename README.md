@@ -326,7 +326,7 @@ x9.decode()
 * [ABR HLS](#abr-hls) has additional restrictions
 
  ### `Byterange`
- * with the cli tool
+ * with the cli tool1.92
     * use __full path to video file__  when creating byterange m3u8. 
 ```smalltalk
 x9k3 -i /home/a/input.ts -b
@@ -366,6 +366,8 @@ msnbc1000.ts
 [⇪ top](#documentation)
 
 ### `ABR HLS` 
+ > __if you are passing a master.m3u8 file to x9k3, it's best if it's on the same server, especially if you have a lot of Renditions__. x9k3 works just fine __over a network, make sure you have the bandwidth__. For x9k3 to add SCTE-35 to ABR HLS, it has to parse all of the renditions, at the same time. To handle this efficiently, x9k3 starts a separate process for each rendition, which means __x9k3 will scale very well__.
+>
 
 __Here's how it works__. 
 <samp>
