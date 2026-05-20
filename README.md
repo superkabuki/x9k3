@@ -26,7 +26,7 @@ ___
   _Adrian_
 * __throttling__ is now handled by a __nanosecond accurate__ timer, __SuperTimer__. It __keeps ABR HLS renditions in sync with each other__. It's pretty cool.
 	* __SuperTimer__ will be in the __next release__. 
- <img width="803" height="537" alt="image" src="https://github.com/user-attachments/assets/06feea96-7327-49ed-8950-3b3934cb4c87" />
+<img width="555" height="390" alt="image" src="https://github.com/user-attachments/assets/ca999c8c-3fe1-4523-80c4-0491571c225f" />
 
 
 ___
