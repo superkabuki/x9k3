@@ -22,9 +22,12 @@ ___
  ### `News`
  
 *  __SRT support__ for input videos is now working.
-* __throttling__ is now handled by a nanosecond accurate timer.
 * __SCTE-35 part 2 support__ for __Event Descriptors__ and __Property__ objects.  
   _Adrian_
+* __throttling__ is now handled by a __nanosecond accurate__ timer, __SuperTimer__. It __keeps ABR HLS renditions in sync with each other__. It's pretty cool.
+	* __SuperTimer__ will be in the __next release__. 
+ <img width="803" height="537" alt="image" src="https://github.com/user-attachments/assets/06feea96-7327-49ed-8950-3b3934cb4c87" />
+
 
 ___
 
