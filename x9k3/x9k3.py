@@ -48,19 +48,6 @@ def ssleep(duration):
         pass
     
 
-class SupaThrottle(Throttle):
-
-    def _print_throttle(self,diff):
-        print(f"throttled --> {diff}", file=sys.stderr, end='\r')
-
-    def _set_start(self, pts):
-        """
-        _set_start set first and actualstart
-        """
-        self.first = pts
-        self.actualstart = time.perf_counter()
-        
-
 class X9K3(strm.Stream):
     """
     X9K3 class
@@ -74,7 +61,7 @@ class X9K3(strm.Stream):
         self.iframer = IFramer(shush=True)
         self.scte35 = SCTE35()
         self.sidecar = deque()
-        self.timer = Timer()
+        self.supertimer = SuperTimer()
         self.m3u8 = "index.m3u8"
         self.segnum = None
         self.args = argue()
@@ -259,7 +246,8 @@ class X9K3(strm.Stream):
         if self.args.live:
             self.window.slide_panes()
             if not self.args.no_throttle:
-                self.timer.throttle(seg_time)
+                self.supertimer.throttle(seg_time)
+
             self._discontinuity_seq_plus_one()
 
     def _chk_pdt_flag(self, segment_data):
@@ -361,7 +349,7 @@ class X9K3(strm.Stream):
             return
         one = f"{seg_name}:   start: {self.started:.3f}   "
         two = f"end: {self.now:.3f}   duration: {seg_time:.3f}"
-        print2(f"{one}{two}")
+        print2(f"# {one}{two}")
 
     def _write_segment_file(self, seg_name):
         with open(seg_name, "wb") as seg:
@@ -369,6 +357,7 @@ class X9K3(strm.Stream):
                 seg.write(self.pat_pkt)
                 seg.write(self.pmt_pkt)
             seg.write(self.active_segment.getbuffer())
+            self.media_seq +=1
 
     def _write_segment(self):
         if not self.segnum:
@@ -403,7 +392,6 @@ class X9K3(strm.Stream):
         self.started_byte = self.now_byte
 
     def _write_m3u8(self):
-        self.media_seq = self.window.panes[0].num
         self._discontinuity_seq_plus_one()
         with open(self.m3u8uri(), "w+", encoding="utf8") as m3u8:
             m3u8.write(self._header())
@@ -584,12 +572,11 @@ class X9K3(strm.Stream):
                 cue.show()
                 
     def rt(self, func=False):
-     #   throttler = SupaThrottle()        
         for pkt in self.iter_pkts():
+            pid = self._parse_pid
             if not pkt:
                 break
             self._parse_pkt(pkt)
-       #     throttler.throttle(pkt)
         return False
 
     def no_mp_decode(self,func=False):
@@ -609,7 +596,7 @@ class X9K3(strm.Stream):
         and starts parsing.
         """
         self.apply_args()
-        self.timer.start()
+        self.supertimer.start()
         if self._is_stream():
             if self.args.live:
                 self.rt(func=func)
@@ -690,23 +677,20 @@ class X9K3(strm.Stream):
         _parse_m3u8_media parse a segment from
         a m3u8 input file if it has not been parsed.
         """
-        if "master.m3u8" in media:
-            return
-       # if media not in self.media_list:
-     #   try:
-        self._tsdata = reader(media)
-        if self.args.live:
-            self.rt()
-        else:
-            self.no_mp_decode()
-
-##            for pkt in self.iter_pkts():
-##                self._parse(pkt)
-
-        self._tsdata.close()
-       # except ERR:
-       #     blue(f"skipping {media}")
-     #       self.skipped_segment = True
+##        with reader(media) as rdr:
+##            print(rdr.read())
+##            if b'EXT-X-STREAM-INF' in rdr.read():
+##                return
+        try: 
+            self._tsdata = reader(media)
+            with self._tsdata as tsd:
+                if self.args.live:
+                    self.rt()
+                else:
+                    self.no_mp_decode()
+        except ERR:
+            red(f"skipping {media}")
+            self.skipped_segment = True
             
     def decode_m3u8(self, manifest=None):
         """
@@ -739,12 +723,12 @@ class X9K3(strm.Stream):
                         if media not in self.media_list:
                             self.media_list.append(media)
                             self._parse_m3u8_media(media)
-            self.media_list =self.media_list[:101]
+                    self.media_list =self.media_list[:111]
 
 
-class Timer:
+class SuperTimer:
     """
-    Timer class instances are used for
+    SuperTimer class instances are used for
     segment duration, and live throttling.
     """
 
@@ -753,10 +737,11 @@ class Timer:
         self.begin = None
         self.end = None
         self.lap_time = None
+        self.deficit=0
 
     def start(self, begin=None):
         """
-        start starts the timer
+        start starts the SuperTimer
         """
         self.begin = begin
         if not self.begin:
@@ -766,7 +751,7 @@ class Timer:
 
     def stop(self, end=None):
         """
-        stop stops the timer
+        stop stops the SuperTimer
         """
         self.end = end
         if not self.end:
@@ -788,11 +773,16 @@ class Timer:
         """
         self.stop(end)
         diff = round((seg_time - self.lap_time) , 6)
-        if diff > 0:
-            blue(f"throttling {diff}")
-            ssleep(diff)
         self.start(begin)
-
+        seconds =round((diff-self.deficit)*0.95 ,6)
+        self.deficit=0
+        if seconds >1:
+            ssleep(seconds)
+            blue(f"throttled: {seconds} seconds")
+        if seconds < 0:
+            blue(f"slow:{-(seconds)} seconds")
+        self.deficit+= -(seconds)
+        sys.stderr.buffer.flush()
 
 class SegmentData:
     """
