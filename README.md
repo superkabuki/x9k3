@@ -27,40 +27,6 @@ ___
 * __throttling__ is now handled by a __nanosecond accurate__ timer, __SuperTimer__. It __keeps ABR HLS renditions in sync with each other__. It's pretty cool.
 	* __SuperTimer__ will be in the __next release__. 
 
-## Why am I so excited about the SuperTimer?
-> When you pass x9k3 __ABR HLS as input__ (_like a master.m3u8 with renditions_), x9k3 spaens a new process for each rendition. __The trick for live streaming is to keep all the renditions in sync__. x9k3 has been using a sort of throttling method. If a segment is 10 seconds long and x9k3 can parse it ib n 0
->  ,3 seconds, then that rendition process will sleep for 9,7 seconds. The processing time needs to equal the duration of that segment. This methodology wporks well, __except when you're trying to insert SCTE-35 into ABR HLS, with 7 or 8  renditions, over your suck ass network, and then it starts going down hill.__ Fast. SuperTimer can not only throttle a rendition, but also speed a renditon up__ if needed by reducing future throttle times, and __that is HUGE.__ 
-
-> let me show you.
-```py3
-      def throttle(self, seg_time, begin=None, end=None):
-        """
-        throttle is called to slow segment creation
-        to simulate live streaming.
-        """
-        self.stop(end)
-        diff = round((seg_time - self.lap_time) , 6)
-        self.start(begin)
-        seconds =round((diff-self.deficit)*0.95 ,6)
-        self.deficit=0                       
-        if seconds >1:              
-            ssleep(seconds)    
-            blue(f"throttled: {seconds} seconds")
-        if seconds < 0:
-            blue(f"slow:{-(seconds)} seconds")
-        self.deficit+= -(seconds)          # re-calc self.deficit
-
-``` 
-*  __seg_time__ is duration of the segment _( #EXTINF )_
-* __self.lap_time__ is how long it took to process the segment
-* __self.deficit__ tracks late time from previous segments
-* __self.deficit__ is subtracted from this and future throttle times
-
-
-* Tomorrow, I'll tell you about __ssleep__, nanosecond accurate sleep function.
-
-* __if you have a better way, please tell me.__
-
 * [ __screen shot of  a terminal__ ]
 <img width="555" height="390" alt="image" src="https://github.com/user-attachments/assets/ca999c8c-3fe1-4523-80c4-0491571c225f" />
 
