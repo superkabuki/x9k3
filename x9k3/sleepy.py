@@ -1,5 +1,5 @@
 """
-sleepy.py   -  SuperTimer and ssleep.
+x9k3/sleepy.py   -  SuperTimer and ssleep.
 
 """
 
