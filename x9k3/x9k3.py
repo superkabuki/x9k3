@@ -18,8 +18,8 @@ from m3ufu import M3uFu
 from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
+from .sleepy import SuperTimer
 from threefive import blue, red
-from threefive.throttle import Throttle
 
 MAJOR = "1"
 MINOR = "0"
@@ -34,19 +34,20 @@ def version():
     return f"{MAJOR}.{MINOR}.{MAINTAINENCE}"
 
 
-def ssleep(duration):
-    """
-    ssleep- a more accurate sleep.
-    """
-    now = time.perf_counter()
-    end = now + duration
-    buff=0.002
-    if duration > buff:
-        time.sleep(duration - buff)
-    # witness on a spin-lock       
-    while time.perf_counter_ns() < end:
-        pass
-    
+##def ssleep(duration):
+##    """
+##    ssleep- a more accurate sleep.
+##    """
+##    now = time.perf_counter()
+##    end = now + duration
+##    buff=0.002
+##    if duration > buff:
+##        time.sleep(duration - buff)
+##    # witness on a spin-lock
+##    while time.perf_counter_ns() < end:
+##        pass
+##
+
 
 class X9K3(strm.Stream):
     """
@@ -71,8 +72,8 @@ class X9K3(strm.Stream):
         self.media_seq = 0
         self.discontinuity_sequence = 0
         self.first_segment = True
-       #self.first_on_page = None
-        self.media_list=[]
+        # self.first_on_page = None
+        self.media_list = []
         self.now = None
         self.last_sidelines = ""
         self.started_byte = 0
@@ -105,8 +106,8 @@ class X9K3(strm.Stream):
         }
         if self.args.hls_tag not in tag_map:
             raise ValueError(f"hls tag  must be in {tag_map.keys()}")
-        if self.args.hls_tag=='x_daterange':  # PDT required for daterange
-            self.args.program_date_time = True          
+        if self.args.hls_tag == "x_daterange":  # PDT required for daterange
+            self.args.program_date_time = True
         self.scte35.tag_method = tag_map[self.args.hls_tag]
 
     def _args_output_dir(self):
@@ -125,7 +126,7 @@ class X9K3(strm.Stream):
         if True in [self.args.program_date_time, self.args.delete, self.args.replay]:
             self.args.live = True
             self.window.delete = True
- 
+
     def _args_window_size(self):
         """
         _args_window_size sets sliding window size
@@ -242,11 +243,11 @@ class X9K3(strm.Stream):
             self._chk_sidecar_cues()
             self._chk_splice_point()
 
-    def _chk_live(self, seg_time):
+    def _chk_live(self, seg_name, seg_time):
         if self.args.live:
             self.window.slide_panes()
             if not self.args.no_throttle:
-                self.supertimer.throttle(seg_time)
+                self.supertimer.throttle(seg_name, seg_time)
 
             self._discontinuity_seq_plus_one()
 
@@ -357,7 +358,7 @@ class X9K3(strm.Stream):
                 seg.write(self.pat_pkt)
                 seg.write(self.pmt_pkt)
             seg.write(self.active_segment.getbuffer())
-            self.media_seq +=1
+            self.media_seq += 1
 
     def _write_segment(self):
         if not self.segnum:
@@ -387,7 +388,7 @@ class X9K3(strm.Stream):
         if self.scte35.break_timer is not None:
             self.scte35.break_timer += seg_time
         self.scte35.chk_cue_state()
-        self._chk_live(seg_time)
+        self._chk_live(seg_name, seg_time)
         self._start_next_start(pts=self.now)
         self.started_byte = self.now_byte
 
@@ -566,11 +567,11 @@ class X9K3(strm.Stream):
         return True
         # return False
 
-    def _parse_pkt(self,pkt):
-            cue = self._parse(pkt)
-            if cue:
-                cue.show()
-                
+    def _parse_pkt(self, pkt):
+        cue = self._parse(pkt)
+        if cue:
+            cue.show()
+
     def rt(self, func=False):
         for pkt in self.iter_pkts():
             pid = self._parse_pid
@@ -579,7 +580,7 @@ class X9K3(strm.Stream):
             self._parse_pkt(pkt)
         return False
 
-    def no_mp_decode(self,func=False):
+    def no_mp_decode(self, func=False):
         """
         no_mp_decode do not use mp for decode
         """
@@ -587,8 +588,8 @@ class X9K3(strm.Stream):
         for pkt in self.iter_pkts(num_pkts=num_pkts):
             if not pkt:
                 break
-            self._parse_pkt(pkt)        
-        return False        
+            self._parse_pkt(pkt)
+        return False
 
     def decode(self, func=False):
         """
@@ -677,21 +678,22 @@ class X9K3(strm.Stream):
         _parse_m3u8_media parse a segment from
         a m3u8 input file if it has not been parsed.
         """
-##        with reader(media) as rdr:
-##            print(rdr.read())
-##            if b'EXT-X-STREAM-INF' in rdr.read():
-##                return
-        try: 
-            self._tsdata = reader(media)
-            with self._tsdata as tsd:
-                if self.args.live:
-                    self.rt()
-                else:
-                    self.no_mp_decode()
-        except ERR:
-            red(f"skipping {media}")
-            self.skipped_segment = True
-            
+        ##        with reader(media) as rdr:
+        ##            print(rdr.read())
+        ##            if b'EXT-X-STREAM-INF' in rdr.read():
+        ##                return
+        #       try:
+        self._tsdata = reader(media)
+        with self._tsdata as tsd:
+            if self.args.live:
+                self.rt()
+            else:
+                self.no_mp_decode()
+
+    ##        except ERR:
+    ##            red(f"skipping {media}")
+    ##            self.skipped_segment = True
+
     def decode_m3u8(self, manifest=None):
         """
         decode_m3u8 is called when the input file is a m3u8 playlist.
@@ -708,7 +710,7 @@ class X9K3(strm.Stream):
                 if not m3u8:
                     return False
                 for line in m3u8:
-                    if not line:  
+                    if not line:
                         return False
                     line = _clean_line(line)
                     if self._endlist(line):
@@ -717,72 +719,14 @@ class X9K3(strm.Stream):
                         media = None
                     else:
                         media = line
-                        if base_uri not in media and not media.startswith('http'):
+                        if base_uri not in media and not media.startswith("http"):
                             media = base_uri + media
                     if media:
                         if media not in self.media_list:
                             self.media_list.append(media)
                             self._parse_m3u8_media(media)
-                    self.media_list =self.media_list[:111]
+                    self.media_list = self.media_list[:111]
 
-
-class SuperTimer:
-    """
-    SuperTimer class instances are used for
-    segment duration, and live throttling.
-    """
-
-    def __init__(self):
-        self.started = time.time()
-        self.begin = None
-        self.end = None
-        self.lap_time = None
-        self.deficit=0
-
-    def start(self, begin=None):
-        """
-        start starts the SuperTimer
-        """
-        self.begin = begin
-        if not self.begin:
-            self.begin = time.time()
-        self.end = None
-        self.lap_time = None
-
-    def stop(self, end=None):
-        """
-        stop stops the SuperTimer
-        """
-        self.end = end
-        if not self.end:
-            self.end = time.time()
-        self.lap_time = self.end - self.begin
-
-    def elapsed(self, now=None):
-        """
-        elapsed returns the elapsed time
-        """
-        if not now:
-            now = time.time()
-        return now - self.started
-
-    def throttle(self, seg_time, begin=None, end=None):
-        """
-        throttle is called to slow segment creation
-        to simulate live streaming.
-        """
-        self.stop(end)
-        diff = round((seg_time - self.lap_time) , 6)
-        self.start(begin)
-        seconds =round((diff-self.deficit)*0.95 ,6)
-        self.deficit=0
-        if seconds >1:
-            ssleep(seconds)
-            blue(f"throttled: {seconds} seconds")
-        if seconds < 0:
-            blue(f"slow:{-(seconds)} seconds")
-        self.deficit+= -(seconds)
-        sys.stderr.buffer.flush()
 
 class SegmentData:
     """
