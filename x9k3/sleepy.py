@@ -1,5 +1,5 @@
 """
-x9k3/sleepy.py   -  SuperTimer and ssleep.
+sleepy.py   -  SuperTimer and ssleep.
 
 """
 
@@ -71,7 +71,7 @@ class SuperTimer:
         """
         diff = round((seg_time - self.lap_time), 6)
         self.start(begin)
-        seconds = round((diff - self.offset) * 0.99, 6)
+        seconds = round((diff - self.offset), 6)
         return seconds
 
     def overunder(self, seg_name, seconds):
@@ -79,13 +79,14 @@ class SuperTimer:
         overunder - warn if over time for segment,
         warn  and ssleep if time is under under time,
         """
+        action = "no action"
         if seconds > 0:
             ssleep(seconds)
             action = "throttled"
-        else:
+        if seconds < 0:
             action = "slow"
-        blue(f"{action} {seg_name} | offset: {self.offset}")
-        self.offset = -(seconds)
+        self.offset = -seconds
+        blue(f"{seg_name}  {action} | offset: {self.offset}")
 
     def throttle(self, seg_name, seg_time, begin=None, end=None):
         """
