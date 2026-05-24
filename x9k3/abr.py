@@ -24,7 +24,9 @@ class ABR:
 
     def __init__(self, m3u8_list):
         self.master = None
-        self.m3u8_list = m3u8_list # list of m3u8 manifests for renditions [index.m3u8, index2.m3u8]
+        self.m3u8_list = (
+            m3u8_list  # list of m3u8 manifests for renditions [index.m3u8, index2.m3u8]
+        )
         self.args = argue()
         self.sidecar = self.args.sidecar_file
         self.side_files = []
@@ -80,11 +82,11 @@ class ABR:
     def _chk_master_sidecar(self):
         Path(self.sidecar).touch()
         side_stat = os.stat(self.sidecar).st_mtime
-        if side_stat != self.last_stat:
-            self.load_sidecar()
-            self.clobber_file(self.sidecar)
-            side_stat = os.stat(self.sidecar).st_mtime
-            self.last_stat = side_stat
+        if self.last_stat == os.stat(self.sidecar).st_mtime:
+            return
+        self.load_sidecar()
+        self.clobber_file(self.sidecar)
+        self.last_stat = os.stat(self.sidecar).st_mtime
 
     def go(self):
         """
