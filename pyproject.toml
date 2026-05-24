@@ -4,7 +4,7 @@
 
 [project]
 name = "x9k3"
-version = "1.0.23"
+version = "1.0.25"
 authors = [
   { name="Adrian of Doom and a Cast of Thousands", email="spam@iodisco.com" },
 ]
