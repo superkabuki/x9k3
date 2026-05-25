@@ -107,11 +107,11 @@ class SCTE35:
             fdur = f",PLANNED-DURATION={self.break_duration}"
         if self.cue_state == "OUT":
             fstart = f',START-DATE="{iso8601}"'
-            tag = f"{fbase}{fstart}{fdur},SCTE35-OUT={self.cue.encode_as_hex()}"
+            tag = f"{fbase}{fstart}{fdur},SCTE35-OUT={self.cue.hex()}"
             return tag
         if self.cue_state == "IN":
             fstop = f',END-DATE="{iso8601}"'
-            tag = f"{fbase}{fstop},SCTE35-IN={self.cue.encode_as_hex()}"
+            tag = f"{fbase}{fstop},SCTE35-IN={self.cue.hex()}"
             self.event_id += 1
             return tag
         return tag
