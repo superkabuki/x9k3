@@ -86,7 +86,7 @@ class SuperTimer:
         if seconds < 0:
             action = "slow"
         self.offset = -seconds
-        blue(f"{seg_name}  {action} | offset: {self.offset}")
+        blue(f"{seg_name}  {action}| seconds:{seconds} | offset: {self.offset}")
 
     def throttle(self, seg_name, seg_time, begin=None, end=None):
         """
