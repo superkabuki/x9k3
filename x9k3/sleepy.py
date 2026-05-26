@@ -11,6 +11,8 @@ def ssleep(duration):
     """
     ssleep- a more accurate sleep.
     """
+    if duration < 0:
+        return
     now = time.perf_counter()
     end = now + duration
     buff = 0.002
@@ -79,17 +81,9 @@ class SuperTimer:
         overunder - warn if over time for segment,
         warn  and ssleep if time is under under time,
         """
-        action = "no action"
-        if seconds > 0:
-            ssleep(seconds)
-            action = "throttled"
-            self.offset  =-seconds
-        elif seconds < 0:
-            action = "slow"
-            self.offset = -seconds
-        else:
-            self.offset=0
-        blue(f"{seg_name}  {action}| seconds:{seconds} | offset: {self.offset}")
+        ssleep(seconds)
+        self.offset =-seconds
+        blue(f"{seg_name} | seconds:{seconds} | offset: {self.offset}")
 
     def throttle(self, seg_name, seg_time, begin=None, end=None):
         """
