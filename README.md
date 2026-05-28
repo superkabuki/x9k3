@@ -215,15 +215,19 @@ optional arguments:
  ```
 #### `https hls m3u8 for input, and inserting SCTE-35 from a sidecar file, and continuing from a previously create index.m3u8 in the output dir`
  ```smalltalk
-   x9k3 -i https://bigcorp.ltd/longb2.m3u8 --output_dir /home/a/variant0 -continue_m3u8 -s sidecar.txt
+   x9k3 -i https://bigcorp.ltd/longb2.m3u8 --output_dir /home/a/variant0 --continue_m3u8 -s sidecar.txt
  ```  
 #### `using stdin as input`
    ```smalltalk
    cat video.ts | x9k3   -o output_dir
    ```
-#### `live m3u8 file as input, add SCTE-35 from a sidecar file, change segment duration to 3 and output as live stream`
+#### `live master.m3u8 file as input, add SCTE-35 from a sidecar file, output as live stream`
 ```smalltalk
-x9k3 -i https://example.com/rendition.m3u8 -s sidecar.txt -t 3 -l -o output-dir
+x9k3 -i https://example.com/master.m3u8 -s sidecar.txt  -l -o output-dir
+```
+#### `VOD master.m3u8 file as input, add SCTE-35 from a sidecar file, output as live stream`
+```smalltalk
+x9k3 -i https://example.com/master.m3u8 -s sidecar.txt  -l -o output-dir
 ```
 [⇪ top](#documentation)
 
