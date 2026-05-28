@@ -17,7 +17,7 @@ class SlidingWindow:
         self.size = size
         self.panes = deque()
         self.delete = False
-        self.delete_queue=deque()
+        self.delete_queue = deque()
 
     def popleft_pane(self):
         """
