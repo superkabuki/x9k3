@@ -3,7 +3,11 @@
 ### x9k3 Injects SCTE-35 Into HLS 
 ___
 
-### Current Version:  `v1.0.25`  
+### Current Version:  `v1.0.27` 
+ 
+#### Heads up!
+> I found a bug in every version before v1.0.27 that differs SCTE-35 from the sidecar file to the next segment, unless it occurs at the first half of the segment. __Upgrade to v1.0.27 to fix__
+
 
 ### `Features`
 
@@ -770,13 +774,6 @@ x9k3 -i input.ts -s sidecar.txt
 
 ```
 #### `Super Cool Feature`: adbreak3 can be used in real time to add SCTE-35 on the fly to live HLS manifest.
-
-
- 
-
-
-
-
 
 
    ![image](https://github.com/futzu/x9k3/assets/52701496/65d915f9-8721-4386-9353-2e32911c6a64)
