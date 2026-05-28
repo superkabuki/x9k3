@@ -7,7 +7,7 @@ ___
  *  SuperTimer is now active in x9k3.
  
 #### Heads up!
->  I found a __bug in every version before v1.0.31__ that differs SCTE-35 from the sidecar file to the next segment, unless it occurs in the first half of the segment.  __Upgrade to v1.0.31 to fix__
+>  I found a __bug in every version before v1.0.31__ that delays SCTE-35 insertion from the sidecar file to the next segment, unless it occurs in the first half of the segment.  __Upgrade to v1.0.31 to fix__
 
 
 ### `Features`
