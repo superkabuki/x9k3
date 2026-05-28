@@ -19,7 +19,6 @@ from .argue import argue
 from .scte35 import SCTE35
 from .sliding import SlidingWindow
 from .sleepy import SuperTimer
-from threefive import blue, red
 
 MAJOR = "1"
 MINOR = "0"
@@ -32,21 +31,6 @@ def version():
     Odd number versions are releases.
     """
     return f"{MAJOR}.{MINOR}.{MAINTAINENCE}"
-
-
-##def ssleep(duration):
-##    """
-##    ssleep- a more accurate sleep.
-##    """
-##    now = time.perf_counter()
-##    end = now + duration
-##    buff=0.002
-##    if duration > buff:
-##        time.sleep(duration - buff)
-##    # witness on a spin-lock
-##    while time.perf_counter_ns() < end:
-##        pass
-##
 
 
 class X9K3(strm.Stream):
@@ -449,7 +433,7 @@ class X9K3(strm.Stream):
                 splice_pts = float(s[0])
                 splice_cue = s[1]
                 #      if self.started:
-                if self.started <= splice_pts <= self.now:
+                if self.started <= splice_pts <= self.started + self.args.time:
                     self.sidecar.remove(s)
                     self.scte35.cue = Cue(splice_cue)
                     self.scte35.cue.decode()
@@ -572,20 +556,11 @@ class X9K3(strm.Stream):
         if cue:
             cue.show()
 
-    def rt(self, func=False):
-        for pkt in self.iter_pkts():
-            pid = self._parse_pid
-            if not pkt:
-                break
-            self._parse_pkt(pkt)
-        return False
-
     def no_mp_decode(self, func=False):
         """
         no_mp_decode do not use mp for decode
         """
-        num_pkts = 1400
-        for pkt in self.iter_pkts(num_pkts=num_pkts):
+        for pkt in self.iter_pkts():
             if not pkt:
                 break
             self._parse_pkt(pkt)
@@ -599,10 +574,7 @@ class X9K3(strm.Stream):
         self.apply_args()
         self.supertimer.start()
         if self._is_stream():
-            if self.args.live:
-                self.rt(func=func)
-            else:
-                self.no_mp_decode(func=func)
+            self.no_mp_decode(func=func)
         else:
             self.decode_m3u8(self.args.input)
         self.addendum()
@@ -685,10 +657,7 @@ class X9K3(strm.Stream):
         #       try:
         self._tsdata = reader(media)
         with self._tsdata as tsd:
-            if self.args.live:
-                self.rt()
-            else:
-                self.no_mp_decode()
+            self.no_mp_decode()
 
     ##        except ERR:
     ##            red(f"skipping {media}")
