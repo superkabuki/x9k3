@@ -3,8 +3,8 @@ sleepy.py   -  SuperTimer and ssleep.
 
 """
 
-import sys, time
-from threefive.stuff import red, blue
+import  time
+from threefive.stuff import  blue
 
 
 def ssleep(duration):
@@ -83,7 +83,7 @@ class SuperTimer:
         """
         ssleep(seconds)
         self.offset =-seconds
-        blue(f"{seg_name} | seconds:{seconds} | offset: {self.offset}")
+        blue(f"{seg_name}  || offset: {self.offset}")
 
     def throttle(self, seg_name, seg_time, begin=None, end=None):
         """
