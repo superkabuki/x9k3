@@ -22,7 +22,7 @@ from .sleepy import SuperTimer
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "25"
+MAINTAINENCE = "27"
 
 
 def version():
@@ -399,17 +399,21 @@ class X9K3(strm.Stream):
                 for line in sidelines:
                     line = line.decode().strip().split("#", 1)[0]
                     if line:
+                        print(line)
                         pts, data = line.split(",", 1)
                         cue = Cue(data)
-                        insert_pts = self._adjusted_pts(cue)
-                        if insert_pts == -1.0:
-                            insert_pts = pts
+                        print(self.now)
+                        if  pts  in ['0.0',b'0.0',0,0.0]:
+                            insert_pts=self.now
+                            print("NOW")
+                            print(self.now)
+                        else:
+                            insert_pts = self._adjusted_pts(cue)
+                            if insert_pts == -1.0:
+                                insert_pts = pts
                         line = f"{insert_pts},{data}"
-                        blue(f"loading  {line}")
-                        if insert_pts == 0.0:
-                            line = f"{self.now},{data}"
+                        blue(f"loading  {line}")                    
                         self.add2sidecar(line)
-                sidefile.close()
                 self.last_sidelines = sidelines
             self.clobber_file(self.args.sidecar_file)
 
@@ -650,18 +654,9 @@ class X9K3(strm.Stream):
         _parse_m3u8_media parse a segment from
         a m3u8 input file if it has not been parsed.
         """
-        ##        with reader(media) as rdr:
-        ##            print(rdr.read())
-        ##            if b'EXT-X-STREAM-INF' in rdr.read():
-        ##                return
-        #       try:
         self._tsdata = reader(media)
         with self._tsdata as tsd:
             self.no_mp_decode()
-
-    ##        except ERR:
-    ##            red(f"skipping {media}")
-    ##            self.skipped_segment = True
 
     def decode_m3u8(self, manifest=None):
         """
