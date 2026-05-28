@@ -30,8 +30,13 @@ ___
 * __SCTE-35 part 2 support__ for __Event Descriptors__ and __Property__ objects.  
   _Adrian_
 * __throttling__ is now handled by a __nanosecond accurate__ timer, __SuperTimer__. It __keeps ABR HLS renditions in sync with each other__. It's pretty cool.
-	* __SuperTimer__ will be in the __next release__. 
+	* __SuperTimer__ is in __v1.0.31__. 
+* [ cool terminal screenshot ]
+
+<img width="604" height="407" alt="image" src="https://github.com/user-attachments/assets/a1c3e67d-491c-4ba1-91da-c9e80226b25e" />
+
 ___
+
 
 ## Documentation
 
