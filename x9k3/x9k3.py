@@ -22,7 +22,7 @@ from .sleepy import SuperTimer
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "27"
+MAINTAINENCE = "31"
 
 
 def version():
