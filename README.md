@@ -349,7 +349,8 @@ x9k3 -i /home/a/input.ts -b
 ```smalltalk
 from x9k3 import X9K3
 x9 = X9K3()
-x9.self.args.byterange = True
+x9.args.input='/home/a/input.ts'
+x9.args.byterange = True
 x9.decode()
 ```
 * output
