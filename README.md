@@ -106,7 +106,7 @@ pypy3 -mpip install x9k3
 
 # `cli` 
 
-### `do the simplest thing that can possibly work`
+## `do the simplest thing that can possibly work`
 
 * There are __a lot of command line switches__ available, but __you do not have to use them all.__ <BR>
 
@@ -118,7 +118,8 @@ x9k3 -i video.ts -o output_dir
 
 later you can add as many switches as you like. 
 
-> __Super Important tip__, `-t TIME, --time TIME  Segment time in seconds [default:2]` __can be a float__. If you are adding SCTE-35 to existing HLS and want to retain the segments as much as possible, if the segment times are mostly 1.92,
+### `Super Important Tip`
+> `-t TIME, --time TIME  Segment time in seconds [default:2]` __can be a float__. If you are adding SCTE-35 to existing HLS and want to retain the segments as much as possible, if the segment times are mostly 1.92,
 > put `-t 1.92` .
   
 
