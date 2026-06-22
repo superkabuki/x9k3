@@ -4,10 +4,25 @@
 ___
 
 ### Current Version:  `v1.0.31` 
- *  SuperTimer is now active in x9k3.
+___
  
-#### Heads up!
->  I found a __bug in every version before v1.0.31__ that delays SCTE-35 insertion from the sidecar file to the next segment, unless it occurs in the first half of the segment.  __Upgrade to v1.0.31 to fix__
+####  x9k3 will now automatically match the segment time and window size for live ABR HLS inputs. 
+
+```js
+Rendition Process Started ../i5/0
+auto segment time: 1.92
+auto window size: 5
+Rendition Process Started ../i5/1
+auto segment time: 1.92
+auto window size: 5
+Rendition Process Started ../i5/2
+auto segment time: 1.92
+auto window size: 5
+Rendition Process Started ../i5/3
+auto segment time: 1.92
+auto window size: 5
+```
+
 
 
 ### `Features`
