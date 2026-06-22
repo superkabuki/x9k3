@@ -7,7 +7,7 @@ import os
 import sys
 import time
 import multiprocessing as mp
-from threefive import reader
+from threefive import reader,pif
 from .x9k3 import X9K3, argue
 
 # mp.set_start_method("fork")
@@ -123,6 +123,35 @@ class ABR:
         sys.exit()
 
 
+def automatic(manifest):
+        """
+        automatic automatically match segment time
+        and window size if input is a m3u8
+        """
+        marker1=b'EXTINF:'
+        marker2=b','
+        durations ={}
+        with reader(manifest) as data:
+            for line in data.readlines():
+                if marker1 in line:
+                    dur =line.strip().split(marker1)[1].rsplit(marker2)[0]
+                    if dur not in durations:
+                        durations[dur] =0
+                    if dur in durations:
+                        durations[dur]+=1
+            top=0
+            key =None
+            for k,v in durations.items():
+                if v > top:
+                    top=v
+                    key=k
+            seg_time=round(pif(key),3)
+            window_size=sum(durations.values())  
+            print(f'auto segment time: {seg_time}')
+            print(f'auto window size: {window_size}')
+            return seg_time,window_size
+
+
 def mk_x9mp(manifest, dir_name, rendition_sidecar):
     """
     mk_x9mp generates an X9MP instance and
@@ -131,8 +160,10 @@ def mk_x9mp(manifest, dir_name, rendition_sidecar):
     x9mp = X9K3()
     x9mp.args = argue()
     x9mp.args.output_dir = dir_name
-    x9mp.args.input = manifest.media
+    x9mp.args.input = manifest.media   
     x9mp.args.sidecar_file = rendition_sidecar
+    x9mp.args.time,x9mp.args.window_size=automatic(manifest.media)
+
     return x9mp
 
 
