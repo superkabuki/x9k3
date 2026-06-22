@@ -50,9 +50,10 @@ ___
 
 <img width="604" height="407" alt="image" src="https://github.com/user-attachments/assets/a1c3e67d-491c-4ba1-91da-c9e80226b25e" />
 
-*
-* __What the hell is "offset"?___
-> Offset is how far ahead x9k3 is of normal playback speed. x9k3 parses a segment much faster than it takes to play the segment. SuperTimer uses offset to know when to slow down or speed up x9k3 to keep the renditions in sync. __A good offset is -(segment time) to 0. If a segment is 1.92 seconds long, you want the offset to be -1.92 to 0. A positive offset is a really good indication that your network is too slow. Most of the time spent processing a segment is downloading it. 
+<BR>
+
+
+___
 
 ## Documentation
 
