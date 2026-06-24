@@ -3,8 +3,8 @@ sleepy.py   -  SuperTimer and ssleep.
 
 """
 
-import  time
-from threefive.stuff import  blue
+import time
+from threefive.stuff import blue
 
 
 def ssleep(duration):
@@ -82,8 +82,9 @@ class SuperTimer:
         warn  and ssleep if time is under under time,
         """
         ssleep(seconds)
-        self.offset =-seconds
-        blue(f"{seg_name}  || offset: {self.offset}")
+        self.offset = -seconds
+
+    # blue(f"{seg_name}  || offset: {self.offset}")
 
     def throttle(self, seg_name, seg_time, begin=None, end=None):
         """
