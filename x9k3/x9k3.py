@@ -33,6 +33,39 @@ def version():
     return f"{MAJOR}.{MINOR}.{MAINTAINENCE}"
 
 
+def automatic(manifest, retry=True):
+    """
+    automatic automatically match segment time
+    and window size if input is a m3u8
+    """
+    marker1 = b"EXTINF:"
+    marker2 = b","
+    durations = {}
+    with reader(manifest) as data:
+        for line in data.readlines():
+            #      print(line)
+            if marker1 in line:
+                dur = line.strip().split(marker1)[1].rsplit(marker2)[0]
+                if dur not in durations:
+                    durations[dur] = 0
+                if dur in durations:
+                    durations[dur] += 1
+        top = 0
+        key = None
+        for k, v in durations.items():
+            if v > top:
+                top = v
+                key = k
+        if retry:
+            if not key:
+                return automatic(manifest, retry=False)
+        seg_time = round(pif(key), 3)
+        window_size = sum(durations.values())
+        print(f"auto segment time: {seg_time}")
+        print(f"auto window size: {window_size}")
+        return seg_time, window_size
+
+
 class X9K3(strm.Stream):
     """
     X9K3 class
@@ -332,9 +365,21 @@ class X9K3(strm.Stream):
     def _print_segment_details(self, seg_name, seg_time):
         if not self.started:
             return
-        one = f"{seg_name}:   start: {self.started:.3f}   "
-        two = f"end: {self.now:.3f}   duration: {seg_time:.3f}"
-        print2(f"# {one}{two}")
+        rev = "\033[7m"
+        norm = "\033[0m"
+        splited = seg_name.split("/")
+        name = f"{rev}{splited[-1]}{norm}"
+        if splited[-2].isdigit():
+            name = f"{splited[-2]}  - {name}"
+        one = f"{name}\tstart: {self.started:.3f} | "
+        two = f"duration: {seg_time:.3f} | "
+        three = ""
+        if self.args.live:
+            offs = f"{self.supertimer.offset:.3f} |"
+            if self.supertimer.offset >= 0:
+                offs = f"+{offs}"
+            three = f"offset: {offs}"
+        print2(f" {one}{two}{three}")
 
     def _write_segment_file(self, seg_name):
         with open(seg_name, "wb") as seg:
@@ -403,8 +448,8 @@ class X9K3(strm.Stream):
                         pts, data = line.split(",", 1)
                         cue = Cue(data)
                         print(self.now)
-                        if  pts  in ['0.0',b'0.0',0,0.0]:
-                            insert_pts=self.now
+                        if pts in ["0.0", b"0.0", 0, 0.0]:
+                            insert_pts = self.now
                             print("NOW")
                             print(self.now)
                         else:
@@ -412,7 +457,7 @@ class X9K3(strm.Stream):
                             if insert_pts == -1.0:
                                 insert_pts = pts
                         line = f"{insert_pts},{data}"
-                        blue(f"loading  {line}")                    
+                        blue(f"loading  {line}")
                         self.add2sidecar(line)
                 self.last_sidelines = sidelines
             self.clobber_file(self.args.sidecar_file)
@@ -544,12 +589,12 @@ class X9K3(strm.Stream):
         """
         _is_stream determine if input is an mpegts stream.
         """
-        if self.args.input == sys.stdin.buffer:
-            return True
-        if self.args.input.startswith(("srt://", "udp://")):
-            return True
+        ##        if self.args.input == sys.stdin.buffer:
+        ##            return True
+        ##        if self.args.input.startswith(("srt://", "udp://")):
+        ##            return True
         packet = self._tsdata.read(188)
-        if packet.startswith(b"#"):
+        if b"#EXTM3U" in packet:
             return False
         self._parse(packet)
         return True
@@ -662,6 +707,8 @@ class X9K3(strm.Stream):
         """
         decode_m3u8 is called when the input file is a m3u8 playlist.
         """
+        self.args.time, self.args.window_size = automatic(manifest)
+        self._args_window_size()
         based = manifest.rsplit("/", 1)
         if len(based) > 1:
             base_uri = f"{based[0]}/"
