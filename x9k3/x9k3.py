@@ -24,6 +24,8 @@ MAJOR = "1"
 MINOR = "0"
 MAINTAINENCE = "31"
 
+def print_cue(cue):
+    cue.show()
 
 def version():
     """
@@ -152,7 +154,7 @@ class X9K3(strm.Stream):
         if self.args.live:
             self.window.size = self.args.window_size
             if self.window.size > 10:
-                self.window.size = 10  # cap window size
+                self.args.window_size=self.window.size = 10  # cap window size
                 blue(f"window size adjusted to {self.window.size}")
 
     def _args_continue_m3u8(self):
@@ -548,17 +550,17 @@ class X9K3(strm.Stream):
             self.pat_pkt = pkt
         super()._parse_tables(pkt, pid)
 
-    def _parse(self, pkt):
+    def ppparse(self, pkt):
         """
         _parse is run on every packet.
         """
-        super()._parse(pkt)
+        super().parse(pkt)
         self.now_byte += len(pkt)
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
         if not self.started:
             self._start_next_start(pts=self.now)
-        if self.started and self._pusi_flag(pkt):
+        if self.started and self._pusi_flag(pkt[1]):
             if self.args.shulga:
                 self._shulga_mode(pkt)
             else:
@@ -596,7 +598,7 @@ class X9K3(strm.Stream):
         packet = self._tsdata.read(188)
         if b"#EXTM3U" in packet:
             return False
-        self._parse(packet)
+        self.ppparse(packet)
         return True
         # return False
 
@@ -605,17 +607,19 @@ class X9K3(strm.Stream):
         if cue:
             cue.show()
 
-    def no_mp_decode(self, func=False):
+    def no_mp_decode(self):
         """
         no_mp_decode do not use mp for decode
         """
         for pkt in self.iter_pkts():
             if not pkt:
                 break
-            self._parse_pkt(pkt)
-        return False
+            self.ppparse(pkt)
+     
+  #      return False
+  
 
-    def decode(self, func=False):
+    def decode(self, func=print_cue):
         """
         decode applies any set args,
         and starts parsing.
@@ -623,7 +627,7 @@ class X9K3(strm.Stream):
         self.apply_args()
         self.supertimer.start()
         if self._is_stream():
-            self.no_mp_decode(func=func)
+            self.no_mp_decode()
         else:
             self.decode_m3u8(self.args.input)
         self.addendum()
@@ -703,13 +707,14 @@ class X9K3(strm.Stream):
         with self._tsdata as tsd:
             self.no_mp_decode()
 
-    def decode_m3u8(self, manifest=None):
+    def decode_m3u8(self, manifest):
         """
         decode_m3u8 is called when the input file is a m3u8 playlist.
         """
         self.args.time, self.args.window_size = automatic(manifest)
-        self._args_window_size()
+      #  self._args_window_size()
         based = manifest.rsplit("/", 1)
+        print(based)
         if len(based) > 1:
             base_uri = f"{based[0]}/"
         else:
@@ -726,6 +731,7 @@ class X9K3(strm.Stream):
                     line = _clean_line(line)
                     if self._endlist(line):
                         return False
+                    media=None
                     if line.startswith("#"):
                         media = None
                     else:
