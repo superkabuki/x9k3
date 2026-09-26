@@ -22,7 +22,7 @@ from .sleepy import SuperTimer
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "31"
+MAINTAINENCE = "33"
 
 def print_cue(cue):
     cue.show()
