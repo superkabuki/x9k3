@@ -3,8 +3,8 @@
 ### x9k3 Injects SCTE-35 Into HLS 
 ___
 
-### Current Version:  `v1.0.33` 
-# Please Upgrade to v1.0.33 for critical fix.
+### Current Version:  `v1.0.35` 
+# Please Upgrade to v1.0.35 for critical fix.
 ___
  
 ####  x9k3 will now automatically match the segment time and window size for live ABR HLS inputs. 
