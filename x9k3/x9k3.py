@@ -22,10 +22,12 @@ from .sleepy import SuperTimer
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "33"
+MAINTAINENCE = "35"
+
 
 def print_cue(cue):
     cue.show()
+
 
 def version():
     """
@@ -154,7 +156,7 @@ class X9K3(strm.Stream):
         if self.args.live:
             self.window.size = self.args.window_size
             if self.window.size > 10:
-                self.args.window_size=self.window.size = 10  # cap window size
+                self.args.window_size = self.window.size = 10  # cap window size
                 blue(f"window size adjusted to {self.window.size}")
 
     def _args_continue_m3u8(self):
@@ -439,7 +441,7 @@ class X9K3(strm.Stream):
         the sidecar file and loads them into X9K3.sidecar
         """
         if self.args.sidecar_file:
-            with reader(self.args.sidecar_file) as sidefile:
+            with open(self.args.sidecar_file,"r") as sidefile:
                 sidelines = sidefile.readlines()
                 if sidelines == self.last_sidelines:
                     return
@@ -615,9 +617,8 @@ class X9K3(strm.Stream):
             if not pkt:
                 break
             self.ppparse(pkt)
-     
-  #      return False
-  
+
+    #      return False
 
     def decode(self, func=print_cue):
         """
@@ -712,7 +713,7 @@ class X9K3(strm.Stream):
         decode_m3u8 is called when the input file is a m3u8 playlist.
         """
         self.args.time, self.args.window_size = automatic(manifest)
-      #  self._args_window_size()
+        #  self._args_window_size()
         based = manifest.rsplit("/", 1)
         print(based)
         if len(based) > 1:
@@ -731,7 +732,7 @@ class X9K3(strm.Stream):
                     line = _clean_line(line)
                     if self._endlist(line):
                         return False
-                    media=None
+                    media = None
                     if line.startswith("#"):
                         media = None
                     else:
