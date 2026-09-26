@@ -4,7 +4,7 @@
 ___
 
 ### Current Version:  `v1.0.35` 
-# Please Upgrade to v1.0.35 for critical fix.
+# Please Upgrade to v1.0.35 for critical mmap fix.
 ___
  
 ####  x9k3 will now automatically match the segment time and window size for live ABR HLS inputs. 
