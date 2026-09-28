@@ -52,10 +52,10 @@ class ABR:
         the sidecar file and loads them into X9K3.sidecar
         if live, blank out the sidecar file after cues are loaded.
         """
-        with open(self.sidecar, "r", encoding="utf8") as sidefile:
+        with open(self.sidecar, "rb") as sidefile:
             these_lines = sidefile.readlines()
-        with open(self.sidecar, "w", encoding="utf8") as sided:
-            sided.close()
+            with open(self.sidecar, "wb") as sided:
+                sided.close()
         if these_lines:
             for side_file in self.side_files:
                 print(f"Updating {side_file}")
