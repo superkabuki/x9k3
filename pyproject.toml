@@ -4,14 +4,14 @@
 
 [project]
 name = "x9k3"
-version = "1.0.35"
+version = "1.0.37"
 authors = [
-  { name="Adrian of Doom and a Cast of Thousands", email="spam@iodisco.com" },
+  { name="Adrian of Doom", email="spam@iodisco.com" },
 ]
-description = "SCTE-35 Injecton for HLS"
+description = "SCTE-35 for HLS"
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies=['threefive >=3.0.97', 'm3ufu >=0.0.97']
+dependencies=['threefive >=3.0.99', 'm3ufu >=0.0.97']
 
 classifiers =['Environment :: Console','Operating System :: OS Independent', 'Topic :: Multimedia :: Video', 'Programming Language :: Python :: 3.9', 'Programming Language :: Python :: Implementation :: PyPy','Programming Language :: Python :: Implementation :: CPython']
 
