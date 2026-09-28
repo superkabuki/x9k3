@@ -3,7 +3,7 @@
 ### x9k3 Injects SCTE-35 Into HLS 
 ___
 
-### Current Version:  `v1.0.35` 
+### Current Version:  `v1.0.37` 
 # Please Upgrade to v1.0.35 for critical mmap fix.
 ___
  
