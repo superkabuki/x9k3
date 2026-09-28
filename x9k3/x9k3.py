@@ -22,7 +22,7 @@ from .sleepy import SuperTimer
 
 MAJOR = "1"
 MINOR = "0"
-MAINTAINENCE = "35"
+MAINTAINENCE = "37"
 
 
 def print_cue(cue):
@@ -65,6 +65,9 @@ def automatic(manifest, retry=True):
                 return automatic(manifest, retry=False)
         seg_time = round(pif(key), 3)
         window_size = sum(durations.values())
+        if window_size > 10:
+            print(f"window_size reduced from {window_size} to 10")
+            window_size=10
         print(f"auto segment time: {seg_time}")
         print(f"auto window size: {window_size}")
         return seg_time, window_size
@@ -441,7 +444,7 @@ class X9K3(strm.Stream):
         the sidecar file and loads them into X9K3.sidecar
         """
         if self.args.sidecar_file:
-            with open(self.args.sidecar_file,"r") as sidefile:
+            with open(self.args.sidecar_file, "r") as sidefile:
                 sidelines = sidefile.readlines()
                 if sidelines == self.last_sidelines:
                     return
