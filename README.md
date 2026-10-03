@@ -5,6 +5,7 @@ ___
 
 ### Current Version:  `v1.0.37` 
 # Please Upgrade to v1.0.37 for a critical mmap fix.
+> the mmap issue was actually in threefive, which is a dependency of x9k3. Mostly it would be an issue if you had x9k3 continuing a live m3u8 with another local m3u8, most people will never have any issue with mmap. If you upgrade  to v1.0.37 and still have an mmap based error,  `python3 -mpip install --upgrade threefive`. __All mmap issues have been resolved in threefive v3.1.1__
 ___
  
 ####  x9k3 will now automatically match the segment time and window size for live ABR HLS inputs. 
