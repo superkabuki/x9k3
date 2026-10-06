@@ -55,6 +55,7 @@ class ABR:
         with open(self.sidecar, "rb") as sidefile:
             these_lines = sidefile.readlines()
             with open(self.sidecar, "wb") as sided:
+                sided.write(b'#\n')
                 sided.close()
         if these_lines:
             for side_file in self.side_files:
