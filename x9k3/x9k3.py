@@ -449,7 +449,7 @@ class X9K3(strm.Stream):
                 if sidelines == self.last_sidelines:
                     return
                 for line in sidelines:
-                    line = line().strip().split("#", 1)[0]
+                    line = line.strip().split("#", 1)[0]
                     if line:
                         print(line)
                         pts, data = line.split(",", 1)
