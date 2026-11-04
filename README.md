@@ -40,7 +40,7 @@ auto window size: 5
 ___
 
  ### `News`
- 
+*  __ID3 SCTE-35__ support is coming. __threefive__ already supports reading __Apple Timestamp tags from ac3 and aac__ audio segments. This week, I added support to __threefive__ for __parsing SCTE-35 Cues from ID3 streams__ in __MPEGTS__ streams.In the next month or so,I'll do __a new x9k3 build__ that can convert __ID3 SCTE-35 data__ to __HLS SCTE-35 tags__.  
 *  __SRT support__ for input videos is now working.
 * __SCTE-35 part 2 support__ for __Event Descriptors__ and __Property__ objects.  
   _Adrian_
