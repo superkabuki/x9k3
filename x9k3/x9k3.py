@@ -12,7 +12,7 @@ from collections import deque
 from operator import itemgetter
 from pathlib import Path
 from threefive import blue, pif, print2, red, reader
-from threefive import Cue, ERR, IFramer, Segment
+from threefive import Cue, ERR, Segment
 import threefive.stream as strm
 from m3ufu import M3uFu
 from .argue import argue
@@ -83,7 +83,6 @@ class X9K3(strm.Stream):
         self._tsdata = tsdata
         self.in_stream = tsdata
         self.active_segment = io.BytesIO()
-        self.iframer = IFramer(shush=True)
         self.scte35 = SCTE35()
         self.sidecar = deque()
         self.supertimer = SuperTimer()
@@ -262,7 +261,7 @@ class X9K3(strm.Stream):
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue)
 
     def _chk_iframe(self, pkt):
-        if self.iframer.parse(pkt):
+        if self.parse_iframe(pkt):
             self.load_sidecar()
             self._chk_sidecar_cues()
             self._chk_splice_point()
