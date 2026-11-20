@@ -12,7 +12,7 @@ from collections import deque
 from operator import itemgetter
 from pathlib import Path
 from threefive import blue, pif, print2, red, reader
-from threefive import Cue, ERR, Segment
+from threefive import Cue, ERR,  Segment
 import threefive.stream as strm
 from m3ufu import M3uFu
 from .argue import argue
@@ -45,8 +45,9 @@ def automatic(manifest, retry=True):
     marker1 = b"EXTINF:"
     marker2 = b","
     durations = {}
+    live = True
     with reader(manifest) as data:
-        for line in data.readlines():
+        while line :=data.readline():
             #      print(line)
             if marker1 in line:
                 dur = line.strip().split(marker1)[1].rsplit(marker2)[0]
@@ -65,11 +66,7 @@ def automatic(manifest, retry=True):
                 return automatic(manifest, retry=False)
         seg_time = round(pif(key), 3)
         window_size = sum(durations.values())
-        if window_size > 10:
-            print(f"window_size reduced from {window_size} to 10")
-            window_size=10
         print(f"auto segment time: {seg_time}")
-        print(f"auto window size: {window_size}")
         return seg_time, window_size
 
 
@@ -237,6 +234,7 @@ class X9K3(strm.Stream):
         _chk_splice_point checks for the slice point
         of a segment.
         """
+
         if self.started:
             if self.scte35.cue_time:
                 self.scte35.cue_time = round(self.scte35.cue_time, 6)
@@ -261,6 +259,7 @@ class X9K3(strm.Stream):
             self.scte35.cue_time = self._adjusted_pts(self.scte35.cue)
 
     def _chk_iframe(self, pkt):
+        self.shush=True
         if self.parse_iframe(pkt):
             self.load_sidecar()
             self._chk_sidecar_cues()
@@ -528,14 +527,17 @@ class X9K3(strm.Stream):
             pts = cue.command.pts_time
             pts_adjust = cue.info_section.pts_adjustment
             pts = (pts + pts_adjust) % self.as_90k(self.ROLLOVER)
+        elif cue.command.has("splice_immediate"):
+            pts=0.0
+        else:
+            pts= self.now
         return round(pts, 6)
 
     def _parse_scte35(self, pkt, pid):
         """
         _parse_scte35 overrides the inherited method.
         """
-        if self.args.exclude_mpegts:
-            return None
+
         cue = super()._parse_scte35(pkt, pid)
         if cue:
             self._chk_cue_time()
@@ -554,11 +556,21 @@ class X9K3(strm.Stream):
             self.pat_pkt = pkt
         super()._parse_tables(pkt, pid)
 
+##    def parse(self,pkt):
+##        cue=super().parse(pkt)
+##    #    if cue:
+##   #         pid = self._parse_pid(pkt[1],pkt[2])
+##        return cue
+
     def ppparse(self, pkt):
         """
         _parse is run on every packet.
         """
-        super().parse(pkt)
+        cue =self.parse(pkt)
+        if cue:
+            cue.show()
+            self.add2sidecar(f"{self._adjusted_pts(cue)}, {cue.encode()}")
+            self._chk_cue_time()
         self.now_byte += len(pkt)
         pkt_pid = self._parse_info(pkt)
         self.now = self.pid2pts(pkt_pid)
@@ -590,6 +602,7 @@ class X9K3(strm.Stream):
         if not self.args.live:
             with open(self.m3u8uri(), "a", encoding="utf8") as m3u8:
                 m3u8.write("#EXT-X-ENDLIST")
+                m3u8.close()
 
     def _is_stream(self):
         """
@@ -715,7 +728,7 @@ class X9K3(strm.Stream):
         decode_m3u8 is called when the input file is a m3u8 playlist.
         """
         self.args.time, self.args.window_size = automatic(manifest)
-        #  self._args_window_size()
+        self._args_window_size()
         based = manifest.rsplit("/", 1)
         print(based)
         if len(based) > 1:
