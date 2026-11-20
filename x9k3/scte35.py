@@ -52,6 +52,8 @@ class SCTE35:
         if self.is_cue_out(self.cue):
             self.cue_state = "OUT"
             self.break_timer = 0.0
+            if not self.cue_time:
+                print("NO CUE_TIME")
             if self.cue_time and self.break_duration:
                 self.cue_time += self.break_duration
         if self.is_cue_in(self.cue):
