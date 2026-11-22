@@ -145,6 +145,7 @@ class X9K3(strm.Stream):
         """
         if True in [self.args.program_date_time, self.args.delete, self.args.replay]:
             self.args.live = True
+        if self.args.delete:
             self.window.delete = True
 
     def _args_window_size(self):
@@ -270,13 +271,11 @@ class X9K3(strm.Stream):
             self.window.slide_panes()
             if not self.args.no_throttle:
                 self.supertimer.throttle(seg_name, seg_time)
-
             self._discontinuity_seq_plus_one()
 
-    def _chk_pdt_flag(self, segment_data):
-        if self.args.program_date_time:
-            iso8601 = f"{datetime.datetime.utcnow().isoformat()}Z"
-            segment_data.add_tag("#EXT-X-PROGRAM-DATE-TIME", f"{iso8601}")
+    def _pdt(self):
+        iso8601 = f"{datetime.datetime.utcnow().isoformat()}Z"
+        return f"#EXT-X-PROGRAM-DATE-TIME:{iso8601}\n"
 
     def _clear_endlist(self, lines):
         return [line for line in lines if not self._endlist(line)]
@@ -318,11 +317,6 @@ class X9K3(strm.Stream):
         """
         if not self.args.no_discontinuity:
             segment_data.add_tag("#EXT-X-DISCONTINUITY", None)
-        self._add_adrian(segment_data)
-
-    def _add_adrian(self, segment_data):
-        if not self.args.no_adrian_is_cool_tags_at_splice_points_because_I_suck:
-            segment_data.add_tag("#EXT-X-ADRIAN-IS-COOL", None)
 
     def _add_cue_tag(self, segment_data):
         """
@@ -346,8 +340,8 @@ class X9K3(strm.Stream):
 
     def _mk_segment_data_tags(self, segment_data, seg_time):
         self._add_cue_tag(segment_data)
-        self._chk_pdt_flag(segment_data)
-        segment_data.add_tag("# Start", f" @{self.started}")
+        #self._chk_pdt_flag(segment_data)
+        segment_data.add_tag("## Start",f"@{self.started}")
         segment_data.add_tag("#EXTINF", f"{seg_time},")
         if self.is_byterange():
             tag = "#EXT-X-BYTERANGE"
@@ -430,6 +424,8 @@ class X9K3(strm.Stream):
         self._discontinuity_seq_plus_one()
         with open(self.m3u8uri(), "w+", encoding="utf8") as m3u8:
             m3u8.write(self._header())
+            if self.args.program_date_time:
+                m3u8.write(self._pdt())
             m3u8.write(self.window.all_panes())
             self.segnum += 1
             self.first_segment = False
@@ -758,7 +754,7 @@ class X9K3(strm.Stream):
                         if media not in self.media_list:
                             self.media_list.append(media)
                             self._parse_m3u8_media(media)
-                    self.media_list = self.media_list[:111]
+                    self.media_list = self.media_list[:self.args.window_size +1] # it's args window size
 
 
 class SegmentData:
