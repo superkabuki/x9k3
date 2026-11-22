@@ -113,7 +113,10 @@ class SCTE35:
             return tag
         if self.cue_state == "IN":
             fstop = f',END-DATE="{iso8601}"'
-            tag = f"{fbase}{fstop},SCTE35-IN={self.cue.hex()}"
+            fdur = f",PLANNED-DURATION={self.break_duration}"
+
+            tag = f"{fbase}{fstop}{fdur} ,SCTE35-IN={self.cue.hex()}"
+
             self.event_id += 1
             return tag
         return tag
