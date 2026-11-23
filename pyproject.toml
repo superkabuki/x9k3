@@ -4,14 +4,14 @@
 
 [project]
 name = "x9k3"
-version = "1.0.39"
+version = "1.0.41"
 authors = [
   { name="Adrian of Doom", email="spam@iodisco.com" },
 ]
 description = "Inject SCTE-35 into HLS"
 readme = "README.md"
 requires-python = ">=3.9"
-dependencies=['threefive >=3.1.1', 'm3ufu >=0.0.97']
+dependencies=['threefive >=3.1.13', 'm3ufu >=0.0.97']
 
 classifiers =['Environment :: Console','Operating System :: OS Independent', 'Topic :: Multimedia :: Video', 'Programming Language :: Python :: 3.9', 'Programming Language :: Python :: Implementation :: PyPy','Programming Language :: Python :: Implementation :: CPython']
 
@@ -25,4 +25,3 @@ Issues = "https://github.com/superkabuki/x9k3/issues"
 [project.scripts]
 x9k3= 'x9k3.x9mp:cli'
 adbreak3='x9k3.adbreak3:cli'
-adinterval3='x9k3.adinterval3:cli'
