@@ -3,7 +3,7 @@
 ### x9k3 Injects SCTE-35 Into HLS 
 ___
 
-### Current Version:  `v1.0.39` 
+### Current Version:  `v1.0.41` 
 ___
  
 ####  x9k3 will now automatically match the segment time and window size for live ABR HLS inputs. 
@@ -30,30 +30,22 @@ auto window size: 5
    * __All SCTE-35 HLS Tags__ are Supported.
    * __Add SCTE-35 Tags to ABR HLS__
    * __Segment MPEGTS streams into HLS and transfer SCTE-35 or add new SCTE-35 Tags__
+   *  __ID3 SCTE-35__ support is here.__x9k3__ can convert __ID3 SCTE-35 data__ in MPEGTS  to __HLS SCTE-35 tags__.  
+   * __SCTE-35 part 2 support__ for __Event Descriptors__ and __Property__ objects.  
    * __SCTE-35 Cues__ in __Mpegts Streams__ are Translated into __HLS tags__.
    * __SCTE-35 Cues can be added from a [Sidecar File](#sidecar-files)__.
    * Segments are __Split on SCTE-35 Cues__ as needed.
    * Segments __Start on iframes__.
-   * Supports __h264__ and __h265__ .
+   * Supports __h264__ and __h265__ and __mpeg2__.
    * __Multi-protocol.__ Input sources may be __Files, Http(s), Multicast, SRT, or Unicast UDP streams__.
    * Supports [__Live__](https://github.com/futzu/scte35-hls-x9k3#live) __Streaming__.
-___
-
- ### `News`
-*  __ID3 SCTE-35__ support is coming. __threefive__ already supports reading __Apple Timestamp tags from ac3 and aac__ audio segments. This week, I added support to __threefive__ for __parsing SCTE-35 Cues from ID3 streams__ in __MPEGTS__ streams.In the next month or so,I'll do __a new x9k3 build__ that can convert __ID3 SCTE-35 data__ to __HLS SCTE-35 tags__.  
-*  __SRT support__ for input videos is now working.
-* __SCTE-35 part 2 support__ for __Event Descriptors__ and __Property__ objects.  
-  _Adrian_
-* __throttling__ is now handled by a __nanosecond accurate__ timer, __SuperTimer__. It __keeps ABR HLS renditions in sync with each other__. It's pretty cool.
+  * __throttling__ is now handled by a __nanosecond accurate__ timer, __SuperTimer__. It __keeps ABR HLS renditions in sync with each other__. It's pretty cool.
 	* __SuperTimer__ is in __v1.0.31__. 
-* [ cool terminal screenshot ]
-
-<img width="604" height="407" alt="image" src="https://github.com/user-attachments/assets/a1c3e67d-491c-4ba1-91da-c9e80226b25e" />
+  * [ cool terminal screenshot ]
 
 <BR>
-
-
 ___
+
 
 ## Documentation
 
